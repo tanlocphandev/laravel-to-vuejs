@@ -18,6 +18,85 @@ onMounted(() => {
 onBeforeUnmount(() => {
     clearInterval(timer);
 });
+
+const categories = [
+
+    {
+        name: "Giới Thiệu",
+        to: "/about",
+
+    },
+    {
+        name: "Thông báo",
+        to: "#",
+        children: [
+            {
+                name: "Trường",
+                to: "/news",
+            }
+
+        ]
+    },
+    {
+        name: "Tin Tức",
+        to: "#",
+        children: [
+            {
+                name: "Trường",
+                to: "/news",
+            },
+            {
+                name: "Chung ",
+                to: "/news",
+            }
+
+        ]
+    },
+    {
+        name: "Tuyển sinh",
+        to: "#",
+        children: [
+            {
+                name: "Sau đại học",
+                to: "/news",
+            }
+
+        ]
+    },
+    {
+        name: "Chương trình học tập",
+        to: "#",
+        children: [
+            {
+                name: "Sau đại học",
+                to: "/news",
+            }
+
+        ]
+    },
+    {
+        name: "Danh sách",
+        to: "/",
+
+    },
+    {
+        name: "Tài liệu tham khảo",
+        to: "#",
+        children: [
+            {
+                name: "Tham khảo chung",
+                to: "/",
+            }
+
+        ]
+    },
+    {
+        name: "Liên hệ chúng tôi",
+        to: "",
+
+    },
+
+];
 </script>
 
 <template>
@@ -27,17 +106,27 @@ onBeforeUnmount(() => {
             <v-img cover="cover" src="assets/header-bg.jpg" class="header-image"></v-img>
         </div>
         <div class="nav-bar-container">
-            <router-link class="nav-button">
-                <v-icon class="home-icon">mdi-home</v-icon></router-link
-            >
-            <router-link class="nav-button">Giới thiệu</router-link>
-            <router-link class="nav-button">Thông báo</router-link>
-            <router-link class="nav-button">Tin tức</router-link>
-            <router-link class="nav-button">Tuyển sinh</router-link>
-            <router-link class="nav-button">Chương trình học tập</router-link>
-            <router-link class="nav-button">Danh sách</router-link>
-            <router-link class="nav-button">Tài liệu tham khảo</router-link>
-            <router-link class="nav-button">Liên hệ chúng tôi</router-link>
+            <router-link to="/" class="nav-button">
+                <v-icon class="home-icon">mdi-home</v-icon>
+            </router-link>
+            <v-menu open-on-hover v-for="category in   categories  " :key="category._id" link>
+                <template v-slot:activator="{ props }">
+                    <router-link v-bind="props" :to=category.to class="nav-button">
+
+                        <v-list-item-title class="text-capitalize">
+                            {{ category.name }}
+                        </v-list-item-title>
+                    </router-link>
+                </template>
+
+                <v-list v-if="category?.children && category?.children?.length > 0" class="list-cate">
+                    <v-list-item v-for="  sub   in   category.children  " :key="sub._id" link class="list-sub">
+                        <router-link :to=sub.to class="sub-button">
+                            <v-list-item-title> {{ sub.name }} </v-list-item-title>
+                        </router-link>
+                    </v-list-item>
+                </v-list>
+            </v-menu>
         </div>
         <div class="header-bottom w-1200 m-auto">
             <div>{{ currentTime }}</div>
@@ -48,6 +137,8 @@ onBeforeUnmount(() => {
                 </div>
             </div>
         </div>
+
+
     </v-container>
 </template>
 
@@ -72,14 +163,38 @@ onBeforeUnmount(() => {
     justify-content: center;
     align-items: center;
 }
+
 .home-icon {
-    color: white;
+    color: var(--white);
 }
 
 .nav-button {
-    color: white;
-    padding: 10px 22px;
+    color: var(--white);
+    padding: 10px 18px;
     text-decoration: none;
+}
+
+.list-cate {
+    min-width: 150px
+}
+
+.list-sub {
+    padding: 0 !important;
+}
+
+.sub-button {
+    color: var(--black);
+    text-decoration: none;
+}
+
+.sub-button .v-list-item-title {
+    border-bottom: 1px solid var(--primary);
+    padding: 8px;
+}
+
+.sub-button .v-list-item-title:hover {
+    color: var(--white);
+    background-color: var(--primary);
 }
 
 .nav-button:hover {

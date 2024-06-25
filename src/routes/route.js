@@ -8,6 +8,7 @@ const ClientLayout = () => import("@/components/layouts/ClientLayout.vue");
 // VIEW IMPORT FOR CUSTOMER
 const AboutView = () => import("@/views/AboutView");
 const HomeView = () => import("@/views/HomeView");
+const NewView = () => import("@/views/NewView");
 const NotFoundView = () => import("@/views/NotFoundView");
 
 // VIEW IMPORT FOR AUTH
@@ -33,6 +34,11 @@ const routes = [
                 path: "about",
                 component: AboutView,
                 meta: { title: "Giới thiệu" },
+            },
+            {
+                path: "news",
+                component: NewView,
+                meta: { title: "Tin Tức" },
             },
         ],
     },

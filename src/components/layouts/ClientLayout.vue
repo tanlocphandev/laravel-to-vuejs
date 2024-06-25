@@ -2,6 +2,7 @@
 import Header from "@/components/shared/client/Header";
 import NavLeft from "@/components/shared/client/NavLeft";
 import NavRight from "@/components/shared/client/NavRight";
+import Footer from "@/components/shared/client/Footer";
 </script>
 
 <template>
@@ -16,7 +17,7 @@ import NavRight from "@/components/shared/client/NavRight";
                     </v-col>
 
                     <v-col class="no-padding col-gap" cols="7">
-                        <router-view v-slot="{ Component }" class="bg-black">
+                        <router-view v-slot="{ Component }">
                             <component :is="Component"></component>
                         </router-view>
                     </v-col>
@@ -27,10 +28,13 @@ import NavRight from "@/components/shared/client/NavRight";
                 </v-row>
             </div>
         </v-container>
+
+        <!-- Footer -->
+        <Footer />
     </v-app>
 </template>
 
-<style lang="css">
+<style lang="css" scoped>
 .w-1200 {
     width: 1200px;
 }
@@ -40,15 +44,12 @@ import NavRight from "@/components/shared/client/NavRight";
     margin: 0 !important;
 }
 
+
 .row-gap {
     gap: 16px;
 }
 
 .col-gap {
     margin-left: 16px;
-}
-
-.bg-black {
-    background-color: black;
 }
 </style>

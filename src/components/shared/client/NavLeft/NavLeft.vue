@@ -152,6 +152,10 @@ const access = [
     cursor: pointer;
 }
 
+.v-list-item-title {
+    font-size: 14px !important;
+}
+
 /* Content */
 .content-nav {
     width: 100%;
@@ -182,6 +186,7 @@ const access = [
     border-bottom: 1px solid var(--primary);
     padding: 0 15px;
 }
+
 .access-item {
     display: flex;
     align-items: center;

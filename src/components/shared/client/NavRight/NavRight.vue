@@ -28,18 +28,11 @@ const news = [
         <div class="text-center text-title">Tin tức nổi bật</div>
         <div class="content-nav">
             <div class="content-nav-list">
-                <!-- Duplicate the news items to create a seamless scroll effect -->
                 <div class="content-nav-item" v-for="(item, index) in news" :key="index">
                     <div class="content-nav-img">
                         <v-img :src="item[0]" class="image" aspect-ratio="16/9"></v-img>
                     </div>
-                    <div class="content-nav-title font-weight-bold text-xs">{{ item[1] }}</div>
-                </div>
-                <div class="content-nav-item" v-for="(item, index) in news" :key="'dup' + index">
-                    <div class="content-nav-img">
-                        <v-img :src="item[0]" class="image" aspect-ratio="16/9"></v-img>
-                    </div>
-                    <div class="content-nav-title font-weight-bold text-xs">{{ item[1] }}</div>
+                    <div class="content-nav-title">{{ item[1] }}</div>
                 </div>
             </div>
         </div>
@@ -50,8 +43,6 @@ const news = [
 /* Content */
 .content-nav {
     border: 1px solid var(--primary);
-    margin-bottom: 50px;
-
     overflow: hidden;
 }
 
@@ -75,10 +66,15 @@ const news = [
     animation: scroll 20s linear infinite;
 }
 
+.content-nav-list:hover {
+    animation-play-state: paused;
+}
+
 @keyframes scroll {
     0% {
         transform: translateY(100%);
     }
+
     100% {
         transform: translateY(-100%);
     }
@@ -88,6 +84,11 @@ const news = [
     display: flex;
     align-items: center;
     padding: 15px;
+    cursor: pointer;
+}
+
+.content-nav-item:hover {
+    color: var(--primary);
 }
 
 .content-nav-img {
@@ -102,12 +103,13 @@ const news = [
 }
 
 .content-nav-title {
+    font-size: 14px;
     width: 116px;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 25px;
+    line-height: 20px;
     -webkit-line-clamp: 3;
-    height: 75px;
+    height: 57px;
     display: -webkit-box;
     -webkit-box-orient: vertical;
 }
