@@ -4,4 +4,30 @@
     --black: #000;
     --gray: #ccc;
     --light-gray: #eaeaea;
+    --bg-gray: #e5e5e5;
+}
+
+.v-list-item__prepend {
+    display: unset !important;
+}
+
+i.mdi-checkbox-blank-circle-outline.mdi.v-icon.notranslate.v-theme--light.v-icon--size-default,
+.v-list-item-title {
+    font-size: 14px !important;
+}
+
+.color-primary {
+    color: var(--primary)
+}
+
+.padding-0 {
+    padding: 0 !important;
+}
+
+.bg-gray {
+    background-color: var(--bg-gray);
+}
+
+.mx-30 {
+    margin: 0 30px;
 }

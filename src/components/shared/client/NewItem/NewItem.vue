@@ -18,7 +18,7 @@ defineProps({
             </div>
         </div>
         <div class="description-right">
-            <h1>{{ title }}</h1>
+            <h1><a href="/news/detail">{{ title }}</a></h1>
             <div class="description-sub">
                 <v-icon class="mr-1"> mdi-calendar</v-icon>
                 <p class="mr-1 text-8 ">{{ date }}</p>
@@ -68,7 +68,8 @@ defineProps({
 }
 
 
-.description-right h1 {
+.description-right h1 a {
+    text-decoration: none;
     font-size: 16px;
     font-weight: 700;
     color: var(--primary);
@@ -81,7 +82,7 @@ defineProps({
     -webkit-box-orient: vertical;
 }
 
-.description-right h1:hover {
+.description-right h1 a:hover {
     text-decoration: underline;
 }
 

@@ -2,6 +2,7 @@
 import { getCurrentTime } from "@/utils";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import Avatar from "@/components/ui/Avatar";
+import { ROUTE_PATHS } from "@/constants/route.constant";
 const currentTime = ref("");
 
 function updateTime() {
@@ -23,7 +24,7 @@ const categories = [
 
     {
         name: "Giới Thiệu",
-        to: "/about",
+        to: ROUTE_PATHS.About,
 
     },
     {
@@ -32,7 +33,7 @@ const categories = [
         children: [
             {
                 name: "Trường",
-                to: "/news",
+                to: ROUTE_PATHS.News,
             }
 
         ]
@@ -43,11 +44,11 @@ const categories = [
         children: [
             {
                 name: "Trường",
-                to: "/news",
+                to: ROUTE_PATHS.News,
             },
             {
                 name: "Chung ",
-                to: "/news",
+                to: ROUTE_PATHS.News,
             }
 
         ]
@@ -58,7 +59,7 @@ const categories = [
         children: [
             {
                 name: "Sau đại học",
-                to: "/news",
+                to: ROUTE_PATHS.News,
             }
 
         ]
@@ -69,14 +70,14 @@ const categories = [
         children: [
             {
                 name: "Sau đại học",
-                to: "/news",
+                to: ROUTE_PATHS.News,
             }
 
         ]
     },
     {
         name: "Danh sách",
-        to: "/",
+        to: ROUTE_PATHS.Home,
 
     },
     {
@@ -85,7 +86,7 @@ const categories = [
         children: [
             {
                 name: "Tham khảo chung",
-                to: "/",
+                to: ROUTE_PATHS.Home,
             }
 
         ]
@@ -106,7 +107,7 @@ const categories = [
             <v-img cover="cover" src="assets/header-bg.jpg" class="header-image"></v-img>
         </div>
         <div class="nav-bar-container">
-            <router-link to="/" class="nav-button">
+            <router-link :to=ROUTE_PATHS.Home class="nav-button">
                 <v-icon class="home-icon">mdi-home</v-icon>
             </router-link>
             <v-menu open-on-hover v-for="category in   categories  " :key="category._id" link>

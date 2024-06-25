@@ -12,8 +12,7 @@
         <v-card>
             <v-card-text>
                 <div class="card-avatar">
-                    <v-btn class="custom-btn" variant="text"> Đăng nhập </v-btn>
-                    <v-btn class="custom-btn" variant="text"> Đăng ký </v-btn>
+                    <v-btn to="/auth/login" class="custom-btn" variant="text"> Đăng nhập </v-btn>
                 </div>
             </v-card-text>
         </v-card>

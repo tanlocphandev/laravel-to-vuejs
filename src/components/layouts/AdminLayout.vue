@@ -1,13 +1,23 @@
+<script setup>
+import Header from '@/components/shared/admin/Header';
+import Navbar from '@/components/shared/admin/Navbar';
+
+</script>
+
 <template>
-    <div>Header</div>
+    <v-app>
+        <Header />
 
-    <router-view v-slot="{ Component }">
-        <component :is="Component"></component>
-    </router-view>
+        <Navbar />
 
-    <div>Footer</div>
+        <v-main class="bg-gray">
+            <v-container class="padding-0 mt-5">
+                <router-view v-slot="{ Component }">
+                    <component :is="Component"></component>
+                </router-view>
+            </v-container>
+        </v-main>
+    </v-app>
 </template>
-
-<script setup></script>
 
 <style lang="css" scoped></style>
