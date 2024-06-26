@@ -104,7 +104,7 @@ const categories = [
     <v-container class="pa-0 w-1200">
         <div class="header-container">
             <Avatar class="header-avatar" />
-            <v-img cover="cover" src="assets/header-bg.jpg" class="header-image"></v-img>
+            <v-img cover="cover" src="/assets/header-bg.jpg" class="header-image"></v-img>
         </div>
         <div class="nav-bar-container">
             <router-link :to=ROUTE_PATHS.Home class="nav-button">

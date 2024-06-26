@@ -13,10 +13,12 @@
             <v-card-text>
                 <div class="card-avatar">
                     <v-btn to="/auth/login" class="custom-btn" variant="text"> Đăng nhập </v-btn>
+                    <v-btn to="/admin" class="custom-btn" variant="text">Quản trị viên </v-btn>
                 </div>
             </v-card-text>
         </v-card>
     </v-menu>
+
 </template>
 
 <style lang="css" scoped>

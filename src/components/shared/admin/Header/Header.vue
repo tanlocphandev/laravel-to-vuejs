@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, inject } from 'vue';
+import { ROUTE_PATHS } from '@/constants/route.constant';
+import Search from '@/components/ui/Search';
 
-const drawer = ref(null);
-
-
+const drawer = inject('drawer');
 const bellShake = ref(false)
 
 onMounted(() => {
@@ -26,12 +26,12 @@ onMounted(() => {
             <a href="#" class="header-logo">Admin page</a>
         </div>
         <div class="header-right">
-            <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+            <div>
+                <v-app-bar-nav-icon @click="drawer = !drawer" class="drawer-icon"></v-app-bar-nav-icon>
+                <v-btn :to=ROUTE_PATHS.Home class="home-page-btn action-icon-btn">Client page</v-btn>
+            </div>
             <div class="top-right">
-                <div class="search-field">
-                    <input type="text" class="search-text" placeholder="Tìm kiếm..." />
-                    <v-icon class="search-icon">mdi-magnify</v-icon>
-                </div>
+                <Search width="198px" height="33px" widthIcon="49px" />
 
                 <div class="mx-3">
                     <v-icon :class="{ 'shake': bellShake }">mdi-bell-outline</v-icon>
@@ -58,6 +58,20 @@ onMounted(() => {
 </template>
 
 <style lang="css" scoped>
+.drawer-icon {
+    background-color: var(--primary);
+    height: 51px;
+    width: 51px;
+    border-radius: 50%;
+}
+
+.home-page-btn {
+    margin-left: 10px;
+    height: 33px !important;
+    background-color: var(--white) !important;
+    color: var(--primary) !important;
+}
+
 .header-top {
     background-color: var(--primary);
     height: 51px !important;
@@ -90,12 +104,6 @@ onMounted(() => {
     justify-content: space-between;
 }
 
-.header-right .v-btn {
-    background-color: var(--primary);
-    height: 100%;
-    color: var(--white);
-}
-
 .top-right {
     display: flex;
     align-items: center;
@@ -121,36 +129,6 @@ onMounted(() => {
     color: var(--white);
 }
 
-.search-field {
-    background-color: var(--white);
-    border: 1px solid var(--gray);
-    border-radius: 4px;
-    font-family: Arial;
-    font-size: 13px;
-    height: 33px;
-    width: 198px;
-    float: right;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    margin-right: 20px;
-}
-
-.search-text {
-    width: 100%;
-    padding-left: 15px;
-    border: none;
-    outline: none;
-}
-
-.search-icon {
-    color: var(--white);
-    width: 49px;
-    height: 100%;
-    background: var(--primary);
-    border-radius: 0 4px 4px 0;
-}
 
 /* bell */
 .shake {

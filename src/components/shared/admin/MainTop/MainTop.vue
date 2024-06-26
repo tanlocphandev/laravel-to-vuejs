@@ -33,6 +33,7 @@ defineProps({
     display: flex;
     justify-content: space-between;
     background-color: var(--white);
+    margin-top: 27px;
     margin-bottom: 30px;
     padding: 0 30px;
     width: 100%;

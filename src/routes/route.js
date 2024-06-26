@@ -20,6 +20,10 @@ const LoginView = () => import("@/views/auth/LoginView");
 const AdminHomeView = () => import("@/views/admin/HomeView");
 const AdminAboutView = () => import("@/views/admin/AboutView");
 const AdminDisplayView = () => import("@/views/admin/DisplayView");
+const AdminCategoryView = () => import("@/views/admin/CategoryView");
+const AdminPostView = () => import("@/views/admin/PostView");
+const AdminAccountView = () => import("@/views/admin/AccountView");
+const AdminMessageView = () => import("@/views/admin/MessageView");
 
 /**
  * @type {import("vue-router").RouteRecordRaw}
@@ -43,13 +47,12 @@ const routes = [
                 path: ROUTE_PATHS.News,
                 component: NewView,
                 meta: { title: "Tin Tức" },
-                children: [
-                    {
-                        path: "/detail",
-                        component: NewDetailView,
-                        meta: { title: "Tin Tức chi tiết" },
-                    },
-                ],
+            },
+            {
+                path: ROUTE_PATHS.News + "/detail/:id",
+                name: 'news_details',
+                component: NewDetailView,
+                meta: { title: "Tin Tức chi tiết" },
             },
         ],
     },
@@ -88,25 +91,34 @@ const routes = [
             },
             {
                 path: ROUTE_PATHS.AdminCategory(),
-                component: AdminAboutView,
+                component: AdminCategoryView,
                 meta: { title: "Loại tin" },
                 sensitive: true,
+                children: [
+                    {
+                        path: ROUTE_PATHS.AdminCategory() + "add",
+                        component: AdminCategoryView,
+                        meta: { title: "Thêm loại tin" },
+                        sensitive: true,
+                    },
+
+                ]
             },
             {
                 path: ROUTE_PATHS.AdminPost(),
-                component: AdminAboutView,
+                component: AdminPostView,
                 meta: { title: "Bài viết" },
                 sensitive: true,
             },
             {
                 path: ROUTE_PATHS.AdminAccount(),
-                component: AdminAboutView,
+                component: AdminAccountView,
                 meta: { title: "Tài khoản" },
                 sensitive: true,
             },
             {
                 path: ROUTE_PATHS.AdminMessage(),
-                component: AdminAboutView,
+                component: AdminMessageView,
                 meta: { title: "Hộp thư" },
                 sensitive: true,
             },

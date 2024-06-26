@@ -1,8 +1,8 @@
 <script setup>
-import { ref } from "vue";
+import { inject, ref } from "vue";
 import { ROUTE_PATHS } from "@/constants/route.constant";
 
-const drawer = ref(null);
+const drawer = inject('drawer');
 
 const links = [
     ["mdi-home", "Dashboard", ROUTE_PATHS.AdminHome],
@@ -19,12 +19,16 @@ const news = [
     ["mdi-checkbox-blank-circle-outline", "Loại tin", ROUTE_PATHS.AdminCategory(true)],
     ["mdi-checkbox-blank-circle-outline", "Bài viết", ROUTE_PATHS.AdminPost(true)],
 ];
+
+
+
 </script>
 
 <template>
-    <v-navigation-drawer v-model="drawer" class="mt-5 navigation">
-        <v-sheet class="nav-content pa-4">
-            <v-avatar size="64" class="mr-4">
+    <v-navigation-drawer class="mt-5 navigation" :rail="drawer">
+
+        <v-sheet v-if="!drawer" class="nav-content pa-4">
+            <v-avatar size="50" class="mr-4 ml-1">
                 <v-img src="/assets/avatar.jpg"></v-img>
             </v-avatar>
 
@@ -34,23 +38,24 @@ const news = [
             </div>
         </v-sheet>
 
+        <v-sheet v-else class="nav-content my-4">
+            <v-avatar size="42" class="ml-2">
+                <v-img src="/assets/avatar.jpg"></v-img>
+            </v-avatar>
+        </v-sheet>
+
         <v-divider></v-divider>
 
-        <v-list>
-            <v-list-item v-for="[icon, text, to] in links" :key="icon" link :to="to">
-                <template v-slot:prepend>
-                    <v-icon>{{ icon }}</v-icon>
-                </template>
-                <v-list-item-title> {{ text }} </v-list-item-title>
-            </v-list-item>
+        <v-list density="compact" nav>
+
+
+
+            <v-list-item v-for="[icon, text, to] in links" :key="icon" link :to="to" :prepend-icon="icon" :title=text
+                :value=text></v-list-item>
 
             <v-list-group value="home">
                 <template v-slot:activator="{ props }">
-                    <v-list-item v-bind="props">
-                        <template v-slot:prepend>
-                            <v-icon icon="mdi-laptop"></v-icon>
-                        </template>
-                        <v-list-item-title>Trang chủ</v-list-item-title>
+                    <v-list-item v-bind="props" prepend-icon="mdi-laptop" title="Trang chủ" value="Trang chủ">
                     </v-list-item>
                 </template>
 
@@ -61,11 +66,7 @@ const news = [
 
             <v-list-group value="news">
                 <template v-slot:activator="{ props }">
-                    <v-list-item v-bind="props">
-                        <template v-slot:prepend>
-                            <v-icon icon="mdi-pencil-box-outline"></v-icon>
-                        </template>
-                        <v-list-item-title>Tin tức</v-list-item-title>
+                    <v-list-item v-bind="props" prepend-icon="mdi-pencil-box-outline" title="Tin tức" value="Tin tức">
                     </v-list-item>
                 </template>
 
@@ -85,9 +86,15 @@ const news = [
 
 .nav-content {
     display: flex;
+    flex-direction: row;
     align-items: center;
     background-color: var(--primary);
-    color: var(--white)
+    color: var(--white);
+    transition: all 0.3s ease;
+}
+
+.nav-content div {
+    font-size: 14px;
 }
 
 .v-list-group__items .v-list-item {

@@ -40,6 +40,7 @@
 .main-content {
     border: 1px solid var(--light-gray);
 }
+
 .text-title {
     height: 49px;
     display: flex;
@@ -49,6 +50,7 @@
     background-color: var(--light-gray);
     color: var(--black);
 }
+
 .text-title h1 {
     font-size: 18px;
     font-weight: lighter;

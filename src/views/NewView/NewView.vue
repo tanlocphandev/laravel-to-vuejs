@@ -1,5 +1,5 @@
 <script setup>
-import NewItem from '@/components/shared/client/NewItem/NewItem.vue';
+import NewItem from '@/components/shared/client/NewItem';
 
 </script>
 

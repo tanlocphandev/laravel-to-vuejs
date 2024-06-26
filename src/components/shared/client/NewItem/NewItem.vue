@@ -18,7 +18,7 @@ defineProps({
             </div>
         </div>
         <div class="description-right">
-            <h1><a href="/news/detail">{{ title }}</a></h1>
+            <h1><router-link :to="{ name: 'news_details', params: { id: 1 } }">{{ title }}</router-link></h1>
             <div class="description-sub">
                 <v-icon class="mr-1"> mdi-calendar</v-icon>
                 <p class="mr-1 text-8 ">{{ date }}</p>

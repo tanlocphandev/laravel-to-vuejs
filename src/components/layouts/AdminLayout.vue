@@ -1,6 +1,11 @@
 <script setup>
+import { ref, provide } from 'vue';
 import Header from '@/components/shared/admin/Header';
 import Navbar from '@/components/shared/admin/Navbar';
+
+const drawer = ref(false);
+provide('drawer', drawer);
+
 
 </script>
 
@@ -11,11 +16,9 @@ import Navbar from '@/components/shared/admin/Navbar';
         <Navbar />
 
         <v-main class="bg-gray">
-            <v-container class="padding-0 mt-5">
-                <router-view v-slot="{ Component }">
-                    <component :is="Component"></component>
-                </router-view>
-            </v-container>
+            <router-view v-slot="{ Component }">
+                <component :is="Component"></component>
+            </router-view>
         </v-main>
     </v-app>
 </template>
