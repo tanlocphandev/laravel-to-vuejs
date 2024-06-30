@@ -34,6 +34,10 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
+        info('API Request Error:', [
+            'exception' => $exception->getMessage(),
+            'trace' => $exception->getTraceAsString()
+        ]);
         parent::report($exception);
     }
 
@@ -46,6 +50,19 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
+            return response()->json([
+                'message' => 'Not Found'
+            ], 404);
+        }
+
+        if ($exception instanceof Exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'stack' => $exception->getTraceAsString()
+            ], 500);
+        }
+
         return parent::render($request, $exception);
     }
 }
