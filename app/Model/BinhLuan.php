@@ -10,6 +10,8 @@ class BinhLuan extends Model
 
     public $timestamps = true;
 
+    protected $fillable = ['noidung', 'id_user', 'id_tintuc'];
+
     public function tintuc()
     {
         return $this->belogsTo('App\Model\TinTuc', 'id_tintuc', 'id');
