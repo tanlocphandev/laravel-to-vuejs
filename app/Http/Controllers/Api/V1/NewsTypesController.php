@@ -50,14 +50,6 @@ class NewsTypesController extends Controller
      */
     public function store(NewsTypesRequest $request)
     {
-        $foundNewsTypes = LoaiTin::where('tenloaitin', 'LIKE', '%' . $request->tenloaitin . '%')
-            ->where('id_theloai', '=', $request->id_theloai)
-            ->first();
-
-        if ($foundNewsTypes) {
-            return (new NotFoundException('News type already exists'))->sendError();
-        }
-
         $added = LoaiTin::create($request->all());
 
         if (!$added) {
@@ -110,32 +102,6 @@ class NewsTypesController extends Controller
      */
     public function update(UpdateNewsTypesRequest $request, $id)
     {
-        $foundNewsTypesById = LoaiTin::where('id', '=', $id)->first();
-
-        if (!$foundNewsTypesById) {
-            return (new NotFoundException('News type not found'))->sendError();
-        }
-
-        if (isset($request->tenloaitin) && !empty($request->tenloaitin)) {
-            $foundNewsTypes = LoaiTin::where('tenloaitin', 'LIKE', '%' . $request->tenloaitin . '%')
-                ->where('id_theloai', '=', $foundNewsTypesById->id_theloai)
-                ->first();
-
-            if ($foundNewsTypes && $foundNewsTypes->id != $id) {
-                return (new NotFoundException('News type already exists'))->sendError();
-            }
-        }
-
-        if (isset($request->id_theloai) && !empty($request->id_theloai)) {
-            $foundNewsTypes = LoaiTin::where('id_theloai', '=', $request->id_theloai)
-                ->where('tenloaitin', 'LIKE', '%' . $foundNewsTypesById->tenloaitin . '%')
-                ->first();
-
-            if ($foundNewsTypes && $foundNewsTypes->id != $id) {
-                return (new NotFoundException('News type already exists'))->sendError();
-            }
-        }
-
         $updated = LoaiTin::where('id', '=', $id)->update($request->all());
 
         if (!$updated) {

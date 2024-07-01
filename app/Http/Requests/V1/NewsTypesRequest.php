@@ -24,16 +24,8 @@ class NewsTypesRequest extends FormRequest
     public function rules()
     {
         return [
-            'tenloaitin' => ['required', 'string', 'max:255', 'min:3'],
-            'id_theloai' => ['required', 'integer'],
+            'tenloaitin' => 'required|string|max:255|min:3',
+            'id_theloai' => 'required|numeric',
         ];
-    }
-
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            'tenloaitin' => $this->tenloaitin,
-            'id_theloai' => $this->id_theloai
-        ]);
     }
 }

@@ -25,13 +25,13 @@ class UpdateNewsTypesRequest extends FormRequest
     {
         if ($this->isMethod('PUT')) {
             return [
-                'tenloaitin' => ['required', 'string', 'max:255', 'min:3'],
-                'id_theloai' => ['required', 'integer'],
+                'tenloaitin' => 'required|string|max:255|min:3',
+                'id_theloai' => 'required|integer',
             ];
         } else {
             return [
-                'tenloaitin' => ['sometimes', 'required', 'string', 'max:255', 'min:3'],
-                'id_theloai' => ['sometimes', 'required', 'integer'],
+                'tenloaitin' => 'sometimes|required|string|max:255|min:3',
+                'id_theloai' => 'sometimes|required|integer',
             ];
         }
     }
