@@ -8,15 +8,20 @@ class TinTuc extends Model
 {
     protected $table = "tin_tucs";
     public $timestamps = true;
-    public function loaitin(){
-    	return $this->belogsTo('App\Model\LoaiTin','id_loaitin','id');
+    protected $fillable = ['tieude', 'mota', 'hinhdaidien', 'noidung', 'noibat', 'luotxem', 'id_loaitin', 'id_user'];
+
+    public function loaitin()
+    {
+        return $this->belongsTo('App\Model\LoaiTin', 'id_loaitin', 'id');
     }
 
-     public function user(){
-    	return $this->belogsTo('App\User','id_user','id');
+    public function user()
+    {
+        return $this->belongsTo('App\User', 'id_user', 'id');
     }
- 
-    public function binhluan(){
-    	return $this->hasMany('App\Model\BinhLuan','id_tintuc','id');
+
+    public function binhluan()
+    {
+        return $this->hasMany('App\Model\BinhLuan', 'id_tintuc', 'id');
     }
 }
