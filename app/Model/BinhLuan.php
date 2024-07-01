@@ -14,12 +14,12 @@ class BinhLuan extends Model
 
     public function tintuc()
     {
-        return $this->belogsTo('App\Model\TinTuc', 'id_tintuc', 'id');
+        return $this->belongsTo('App\Model\TinTuc', 'id_tintuc', 'id');
     }
 
     public function user()
     {
-        return $this->belogsTo('App\User', 'id_user', 'id');
+        return $this->belongsTo('App\User', 'id_user', 'id');
     }
 
     public function chitietbinhluan()
