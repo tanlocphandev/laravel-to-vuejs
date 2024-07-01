@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\CommentController;
+use App\Http\Controllers\Api\V1\CommentDetailsController;
 use App\Http\Controllers\Api\V1\MailboxController;
 use App\Http\Controllers\Api\V1\NewsController;
 use App\Http\Controllers\Api\V1\NewsTypesController;
@@ -20,4 +21,5 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('mailbox', MailboxController::class);
     Route::apiResource('news', NewsController::class);
     Route::apiResource('comments', CommentController::class);
+    Route::apiResource('replies', CommentDetailsController::class);
 });
