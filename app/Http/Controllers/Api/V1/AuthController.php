@@ -2,91 +2,106 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Response\OkResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\V1\StoreChangePasswordRequest;
+use App\Http\Requests\V1\StoreForgotPasswordRequest;
+use App\Http\Requests\V1\StoreLoginRequest;
+use App\Response\Exception\UnauthorizedException;
 use App\User;
-use DateTime;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function register(Request $request)
-    {
-        $checkName = DB::table('users')->where('name', $request->name)->first();
-        $checkEmail = DB::table('users')->where('email', $request->email)->first();
 
-        if (isset($checkEmail) && isset($checkName)) {
-            return redirect('quantri/taikhoan/quantri/them')->with('thongbao', "1");
+    public function login(StoreLoginRequest $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return (new UnauthorizedException('Email không tồn tại!'))->sendError();
         }
 
-        $fileName = "avatar.jpg";
-
-        if ($request->hasFile('hinhanh')) {
-            $now = new DateTime();
-            $file = $request->file('hinhanh');
-            $fileName = $now->getTimestamp() . $file->getClientOriginalName();
-            $file->move('assets/user/images/avatar', $fileName);
+        if (!Hash::check($request->password, $user->password)) {
+            return (new UnauthorizedException('Mật khẩu không chính xác!'))->sendError();
         }
 
-        $newUser  = new User();
-        $newUser->name = $request->name;
-        $newUser->email = $request->email;
-        $newUser->viewname = $request->viewname;
-        $newUser->password = bcrypt($request->password);
-        $newUser->permission = $request->permission;
-        $newUser->image = $fileName;
-        $check =  $newUser->save();
+        $response = new OkResponse('Đăng như thanh công!', $user);
 
-        return redirect('quantri/taikhoan/quantri/them')->with('thongbao', $check);
+        return $response->send();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function forgotPassword(StoreForgotPasswordRequest $request)
     {
-        //
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return (new UnauthorizedException('Email không tồn tại!'))->sendError();
+        }
+
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+
+        for ($i = 0; $i < 6; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        $password_resets = DB::table('password_resets')->where('email', '=', $request->email)->first();
+
+        if (!$password_resets) {
+            $password_resets = DB::table('password_resets')
+                ->where('email', '=', $request->email)
+                ->update(['token' => $randomString]);
+        } else {
+            $password_resets = DB::table('password_resets')->insert([
+                'email' => $request->email,
+                'token' => $randomString
+            ]);
+        }
+
+        $payload = [
+            'tenhienthi' => $user->viewname,
+            'maxacthuc' => $randomString,
+        ];
+
+        Mail::send('mail.reset_pass', $payload, function ($msg) use ($user) {
+            $msg->from('huynhvanthuy97@gmail.com', "Khoa Tin học trường Đại học Sư phạm Huế");
+            $msg->to($user->email, $user->viewname)
+                ->subject('Yêu cầu xác thực tài khoản!');
+        });
+
+        return (new OkResponse('Vui lý thúc giữa 5 giời một giữa 15 giời', []))->send();
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function changePassword(StoreChangePasswordRequest $request)
     {
-        //
-    }
+        $email = $request->email;
+        $token = $request->token;
+        $password = $request->password;
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+        $foundPasswordReset = DB::table('password_resets')
+            ->where('email', '=', $email)
+            ->where('token', '=', $token)
+            ->first();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        if (!$foundPasswordReset) {
+            return (new UnauthorizedException('Email hoặc token không hợp lệ!'))->sendError();
+        }
+
+        $foundUser = User::where('email', $email)->first();
+
+        if (!$foundUser) {
+            return (new UnauthorizedException('Email không tồn tại!'))->sendError();
+        }
+
+        $foundUser->password = bcrypt($password);
+
+        $foundUser->save();
+
+        return (new OkResponse('Đổi mật khẩu thành công!', []))->send();
     }
 }

@@ -56,12 +56,12 @@ class Handler extends ExceptionHandler
             ], 404);
         }
 
-        // if ($exception instanceof Exception) {
-        //     return response()->json([
-        //         'message' => $exception->getMessage(),
-        //         'stack' => $exception->getTraceAsString()
-        //     ], 500);
-        // }
+        if ($exception instanceof Exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'stack' => $exception->getTraceAsString()
+            ], 500);
+        }
 
         return parent::render($request, $exception);
     }

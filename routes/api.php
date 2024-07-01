@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\CommentController;
 use App\Http\Controllers\Api\V1\CommentDetailsController;
@@ -12,11 +13,16 @@ use Illuminate\Support\Facades\Route;
 
 // api/v1
 Route::prefix('v1')->group(function () {
+    Route::group(['prefix' => 'auth'], function () {
+        Route::post('login', [AuthController::class, 'login']);
+        Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::post('change-password', [AuthController::class, 'changePassword']);
+    });
+
     Route::group(['prefix' => 'upload'], function () {
         Route::post('file', [UploadController::class, 'upload']);
         Route::post('files', [UploadController::class, 'uploadMultiple']);
     });
-
 
     Route::apiResource('users', UserController::class);
     Route::apiResource('categories', CategoryController::class);
