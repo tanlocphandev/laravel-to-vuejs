@@ -1,7 +1,10 @@
-<script setup></script>
+<script setup>
+import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
+</script>
 
 <template>
     <RouterView />
+    <VueQueryDevtools />
 </template>
 
 <style scoped></style>

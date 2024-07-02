@@ -3,12 +3,16 @@ import Header from "@/components/shared/client/Header";
 import NavLeft from "@/components/shared/client/NavLeft";
 import NavRight from "@/components/shared/client/NavRight";
 import Footer from "@/components/shared/client/Footer";
+import useCategory from "@/hooks/useCategory";
+
+const { data } = useCategory({ include_category: "true", include_news: "true" });
 </script>
 
 <template>
     <v-app>
         <v-container fluid class="pa-0 w-1200">
             <Header />
+
             <!-- CONTENT -->
             <div class="mt-3">
                 <v-row class="no-padding row-gap">
@@ -43,7 +47,6 @@ import Footer from "@/components/shared/client/Footer";
     padding: 0 !important;
     margin: 0 !important;
 }
-
 
 .row-gap {
     gap: 16px;

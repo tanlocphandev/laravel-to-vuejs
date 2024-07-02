@@ -1,12 +1,11 @@
 <script setup>
 defineProps({
-    links: Array,
+    news: Array,
     titleMain: String,
     title: String,
     description: String,
     imageUrl: String,
-    date: String,
-    time: String,
+    datetime: String,
     views: Number,
     comments: Number,
 });
@@ -21,9 +20,9 @@ defineProps({
         <div class="text-content">
             <div class="description">
                 <div class="description-left">
-                    <div v-for="(link, index) in links" :key="index" class="item">
+                    <div v-for="(link, index) in news" :key="index" class="item">
                         <v-icon class="mr-1">mdi-cursor-pointer</v-icon>
-                        <p>{{ link }}</p>
+                        <p>{{ link.tieude }}</p>
                     </div>
                 </div>
                 <div class="description-right">
@@ -35,8 +34,7 @@ defineProps({
                             <h1>{{ title }}</h1>
                             <div class="description-date">
                                 <v-icon class="mr-1"> mdi-calendar</v-icon>
-                                <p class="mr-1">{{ date }}</p>
-                                <p>{{ time }}</p>
+                                <p class="mr-1">{{ datetime }}</p>
                             </div>
                         </div>
                     </div>
@@ -96,7 +94,6 @@ defineProps({
     display: flex;
     margin-bottom: 8px;
     color: #777373;
-
 }
 
 .description-left .item:hover {
@@ -105,7 +102,6 @@ defineProps({
 
 .description-left .v-icon {
     rotate: 90deg;
-
 }
 
 .description-left .item p {

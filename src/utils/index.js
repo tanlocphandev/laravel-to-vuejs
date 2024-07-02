@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export function getCurrentTime() {
     const now = new Date();
     const options = {
@@ -11,3 +13,7 @@ export function getCurrentTime() {
     };
     return now.toLocaleDateString("en-GB", options).replace(/,/g, " |");
 }
+
+export const fDate = (date, format = "DD MMMM YYYY") => {
+    return moment(date).format(format);
+};
