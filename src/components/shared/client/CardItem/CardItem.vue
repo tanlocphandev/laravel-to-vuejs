@@ -8,6 +8,7 @@ defineProps({
     datetime: String,
     views: Number,
     comments: Number,
+    id: Number,
 });
 </script>
 
@@ -31,14 +32,21 @@ defineProps({
                             <v-img :src="imageUrl"></v-img>
                         </div>
                         <div>
-                            <h1>{{ title }}</h1>
+                            <router-link
+                                class="title"
+                                :to="{ name: 'news_details', params: { id } }"
+                            >
+                                {{ title }}
+                            </router-link>
                             <div class="description-date">
                                 <v-icon class="mr-1"> mdi-calendar</v-icon>
                                 <p class="mr-1">{{ datetime }}</p>
                             </div>
                         </div>
                     </div>
+
                     <p class="mt-1 description-text">{{ description }}</p>
+
                     <div class="description-icon">
                         <div>
                             <v-icon class="mr-1">mdi-eye</v-icon>
@@ -141,7 +149,7 @@ defineProps({
     border: 1px solid var(--primary);
 }
 
-.description-right h1 {
+.title {
     font-size: 16px;
     font-weight: 700;
     color: var(--primary);

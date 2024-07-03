@@ -20,6 +20,7 @@ const { data } = useCategory({ include_category: "true", include_news: "true" })
         :title="cardItem?.tintuc[0]?.tieude"
         :imageUrl="cardItem?.tintuc[0]?.hinhdaidien"
         :datetime="fDate(cardItem?.tintuc[0]?.created_at, 'DD/MM/YYYY HH:mm:ss')"
+        :id="cardItem?.tintuc[0]?.id"
         views="5"
         comments="0"
     />
