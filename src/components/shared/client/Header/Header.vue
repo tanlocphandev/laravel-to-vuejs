@@ -12,8 +12,8 @@ const categories = [
         to: ROUTE_PATHS.About,
     },
     {
-        name: "Danh sách",
-        to: ROUTE_PATHS.Home,
+        name: "Nhân sự",
+        to: ROUTE_PATHS.Personnel,
     },
     {
         name: "Tài liệu tham khảo",
@@ -88,16 +88,8 @@ onBeforeUnmount(() => {
                     </router-link>
                 </template>
 
-                <v-list
-                    v-if="category?.children && category?.children?.length > 0"
-                    class="list-cate"
-                >
-                    <v-list-item
-                        v-for="sub in category.children"
-                        :key="sub._id"
-                        link
-                        class="list-sub"
-                    >
+                <v-list v-if="category?.children && category?.children?.length > 0" class="list-cate">
+                    <v-list-item v-for="sub in category.children" :key="sub._id" link class="list-sub">
                         <router-link :to="sub.to" class="sub-button">
                             <v-list-item-title> {{ sub.name }} </v-list-item-title>
                         </router-link>

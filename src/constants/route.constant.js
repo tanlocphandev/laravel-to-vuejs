@@ -1,7 +1,8 @@
 export const ROUTE_PATHS = {
     Home: "/",
-    About: "about",
-    News: "news",
+    About: "/about",
+    Personnel: "/personnel",
+    News: "/news",
     NewsDetails: (id) => `/news/detail/${id}`,
     AdminHome: "/admin",
     AdminCategory: (isRedirect) => (!isRedirect ? "category" : "/admin/category"),
