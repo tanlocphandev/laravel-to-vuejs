@@ -3,6 +3,7 @@ import Header from "@/components/shared/client/Header";
 import NavLeft from "@/components/shared/client/NavLeft";
 import NavRight from "@/components/shared/client/NavRight";
 import Footer from "@/components/shared/client/Footer";
+import Mailbox from "@/components/shared/client/Mailbox";
 import useCategory from "@/hooks/useCategory";
 
 const { data } = useCategory({ include_category: "true", include_news: "true" });
@@ -35,6 +36,8 @@ const { data } = useCategory({ include_category: "true", include_news: "true" })
 
         <!-- Footer -->
         <Footer />
+
+        <Mailbox />
     </v-app>
 </template>
 

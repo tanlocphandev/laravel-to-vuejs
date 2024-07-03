@@ -8,6 +8,8 @@ const ClientLayout = () => import("@/components/layouts/ClientLayout.vue");
 
 // VIEW IMPORT FOR CUSTOMER
 const AboutView = () => import("@/views/AboutView");
+const PersonnelView = () => import("@/views/PersonnelView");
+const PersonnelDetailView = () => import("@/views/PersonnelView/PersonnelDetailView.vue");
 const HomeView = () => import("@/views/HomeView");
 const NewView = () => import("@/views/NewView");
 const NewDetailView = () => import("@/views/NewView/NewDetailView.vue");
@@ -42,6 +44,17 @@ const routes = [
                 path: ROUTE_PATHS.About,
                 component: AboutView,
                 meta: { title: "Giới thiệu" },
+            },
+            {
+                path: ROUTE_PATHS.Personnel,
+                component: PersonnelView,
+                meta: { title: "Nhân sự" },
+            },
+            {
+                path: ROUTE_PATHS.Personnel + "/detail/:id",
+                name: 'person_details',
+                component: PersonnelDetailView,
+                meta: { title: "Nhân sự chi tiết" },
             },
             {
                 path: ROUTE_PATHS.News,
