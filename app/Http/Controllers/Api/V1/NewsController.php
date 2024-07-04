@@ -43,6 +43,14 @@ class NewsController extends Controller
 
         $data = $data->orderBy($request->query('sort', 'id'), $request->query('order', 'desc'))->paginate($request->query('limit', 10))->appends($request->query());
 
+        $result = $data->items();
+
+        foreach ($result as $key => $value) {
+            if (isset($value->hinhdaidien)) {
+                $result[$key]->hinhdaidien = url("assets/user/images/hinhtintuc/" . $value->hinhdaidien);
+            }
+        }
+
         $response = new OkResponse("Lấy danh sách bài viết thành công.", $data->items());
 
         return $response->pagination($data)->send();
