@@ -1,8 +1,19 @@
 <script setup>
+import ShareFB from "@/components/shared/ShareFB.vue";
+import {
+    queryKeysGetAllComment,
+    useGetCommentByNews,
+    useMutationAddComment,
+    useMutationReplyComment,
+} from "@/hooks/comment.hook";
 import { useGetNewsDetails } from "@/hooks/news.hook";
 import { fDate } from "@/utils";
+import CommentCard from "@/views/NewView/components/CommentCard.vue";
+import FormComment from "@/views/NewView/components/FormComment.vue";
+import { useQueryClient } from "@tanstack/vue-query";
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
+import { toast } from "vue-sonner";
 
 const route = useRoute();
 
@@ -10,42 +21,62 @@ const newsId = computed(() => route.params.id);
 
 const { data, isLoading } = useGetNewsDetails(newsId, {
     include_user: "true",
-    include_comment: "true",
 });
 
-const newComment = ref("");
-const comments = ref([
-    { id: 1, user: "Sinh Viên1", date: "2024-06-24 15:30:05", text: "Hello1", replies: 0 },
-    {
-        id: 2,
-        user: "Sinh Viên1",
-        date: "2024-06-24 15:30:05",
-        text: "Tuyệt vời, sư phạm Huế",
-        replies: 1,
-    },
-]);
+const options = computed(() => {
+    return {
+        page: 1,
+        limit: 10,
+        "id_tintuc[eq]": newsId,
+        include_comment_detail: "true",
+        include_user: "true",
+    };
+});
 
-const addComment = () => {
-    if (newComment.value.trim() !== "") {
-        comments.value.push({
-            id: Date.now(),
-            user: "Sinh Viên1",
-            date: new Date().toLocaleString(),
-            text: newComment.value,
-            replies: 0,
-        });
-        newComment.value = "";
-    }
+const { data: comments, isLoading: isLoadingComments } = useGetCommentByNews(
+    options.value
+);
+
+const mutationAddComment = useMutationAddComment();
+const mutationReplyComment = useMutationReplyComment();
+const queryClient = useQueryClient();
+
+const handleSubmitNewComment = ({ comment, callback }) => {
+    const payload = {
+        noidung: comment,
+        id_user: 1,
+        id_tintuc: newsId.value,
+    };
+
+    mutationAddComment.mutate(payload, {
+        onSuccess: () => {
+            toast.success("Bình luận thành công.");
+            queryClient.invalidateQueries({
+                queryKey: queryKeysGetAllComment(options.value),
+                exact: true,
+            });
+            callback();
+        },
+    });
 };
 
-const editComment = (comment) => {
-    // Function to edit a comment
-    newComment.value = comment.text;
-    deleteComment(comment.id);
-};
+const handleSubmitReplyComment = ({ comment, value, callback }) => {
+    const payload = {
+        noidung: value,
+        id_user: 1,
+        id_binhluan: comment.id,
+    };
 
-const deleteComment = (id) => {
-    comments.value = comments.value.filter((comment) => comment.id !== id);
+    mutationReplyComment.mutate(payload, {
+        onSuccess: () => {
+            toast.success("Đã reply thành công");
+            queryClient.invalidateQueries({
+                queryKey: queryKeysGetAllComment(options.value),
+                exact: true,
+            });
+            callback();
+        },
+    });
 };
 </script>
 
@@ -66,21 +97,16 @@ const deleteComment = (id) => {
             </div>
             <div class="mr-3 news-info-item">
                 <v-icon class="color-primary mr-1">mdi-tag-multiple</v-icon>
-                <router-link to="/news" class="color-primary" style="text-decoration: none">
+                <router-link
+                    to="/news"
+                    class="color-primary"
+                    style="text-decoration: none"
+                >
                     Tin tức
                 </router-link>
             </div>
 
-            <iframe
-                src="https://www.facebook.com/plugins/share_button.php?href=http://127.0.0.1:8000/tintuc/11&amp;layout=button_count&amp;size=small&amp;mobile_iframe=true&amp;width=78&amp;height=20&amp;appId"
-                width="78"
-                height="20"
-                style="border: none; overflow: hidden"
-                scrolling="no"
-                frameborder="0"
-                allowtransparency="true"
-                allow="encrypted-media"
-            ></iframe>
+            <ShareFB />
         </div>
 
         <div class="news-content1">
@@ -93,64 +119,29 @@ const deleteComment = (id) => {
 
         <div class="comment py-4">
             <v-card>
-                <h2 class="pl-4 pt-4">{{ comments.length }} bình luận</h2>
-                <div class="pa-4">
-                    <v-textarea
-                        v-model="newComment"
-                        label="Viết bình luận..."
-                        auto-grow
-                        outlined
-                    ></v-textarea>
-                    <v-btn style="float: right" @click="addComment" class="mt-3" color="primary"
-                        >Gửi bình luận</v-btn
-                    >
-                </div>
+                <h2 class="pl-4 pt-4">{{ comments?.length }} bình luận</h2>
 
-                <v-list class="my-5 comment-list">
-                    <v-list-item v-for="comment in comments" :key="comment.id" class="comment-item">
-                        <div class="d-flex align-center">
-                            <v-avatar class="mr-4">
-                                <v-img src="/assets/avatar.jpg"></v-img>
-                            </v-avatar>
-                            <div class="comment-content">
-                                <div>
-                                    <v-list-item-title>
-                                        <strong>{{ comment.user }}</strong>
-                                        <small class="ml-4">{{ comment.date }}</small>
-                                    </v-list-item-title>
-                                    <v-list-item-subtitle>
-                                        <p>{{ comment.text }}</p>
-                                        <v-icon small color="green">mdi-comment</v-icon>
-                                        <span>{{ comment.replies }}</span>
-                                    </v-list-item-subtitle>
-                                </div>
-                                <div>
-                                    <v-btn
-                                        class="action-icon-btn mr-2"
-                                        color="primary"
-                                        @click="editComment(comment)"
-                                    >
-                                        <v-icon class="mr-2">mdi-pencil-outline</v-icon>
-                                        Sửa
-                                    </v-btn>
-                                    <v-btn
-                                        class="action-icon-btn mr-2"
-                                        @click="deleteComment(comment.id)"
-                                    >
-                                        <v-icon class="mr-2">mdi-delete-outline</v-icon>
-                                        Xóa
-                                    </v-btn>
-                                </div>
-                            </div>
-                        </div>
-                    </v-list-item>
+                <FormComment
+                    :btnTextSubmit="'Gửi bình luận'"
+                    @submit="handleSubmitNewComment"
+                />
+
+                <v-list class="my-5 w-100 px-4">
+                    <CommentCard
+                        v-for="comment in comments"
+                        :key="comment.id"
+                        :comment="comment"
+                        @submitReply="handleSubmitReplyComment"
+                    />
                 </v-list>
             </v-card>
         </div>
     </div>
 
     <div v-else>
-        <v-skeleton-loader type="article,article,article,article"></v-skeleton-loader>
+        <v-skeleton-loader
+            type="article,article,article,article"
+        ></v-skeleton-loader>
     </div>
 </template>
 
@@ -183,27 +174,5 @@ const deleteComment = (id) => {
 
 .v-chip {
     margin: 2px;
-}
-
-/* comment */
-
-.comment-list {
-    width: 100%;
-    padding: 20px;
-}
-
-.comment-item {
-    margin-top: 15px;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: var(--white);
-    box-shadow: #0006 0px 4px 8px 0px;
-}
-
-.comment-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
 }
 </style>

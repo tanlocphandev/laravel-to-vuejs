@@ -16,7 +16,7 @@ export const useGetNewsDetails = (newId, params = {}) => {
     const options = computed(() => {
         return {
             queryKey: queryKeysGetNewsDetails(newId, params),
-            queryFn: () => newsService.getByIdQuery(newId, params),
+            queryFn: () => newsService.getById(newId, params),
         };
     });
 
@@ -31,7 +31,7 @@ export const useGetNews = (params = {}) => {
     const options = computed(() => {
         return {
             queryKey: queryKeysGetAllNews({ page, limit, ...others }),
-            queryFn: () => newsService.getQueryParams({ page, limit, ...others }),
+            queryFn: () => newsService.get({ page, limit, ...others }),
             staleTime: 5 * 1000,
             keepPreviousData: true,
         };

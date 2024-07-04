@@ -1,6 +1,7 @@
+import { SERVER_URL } from "@/constants";
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_BASEURL_API;
+const BASE_URL = `${SERVER_URL}/api/v1`;
 
 const http = axios.create({
     baseURL: BASE_URL,

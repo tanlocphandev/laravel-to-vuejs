@@ -1,3 +1,6 @@
+import { SERVER_URL } from "@/constants";
+import { formatDistanceToNow } from "date-fns";
+import vi from "date-fns/locale/vi";
 import moment from "moment";
 
 export function getCurrentTime() {
@@ -19,7 +22,33 @@ export const fDate = (date, format = "DD MMMM YYYY") => {
 };
 
 export const paramsToArrString = (params = {}) => {
-    return Object.keys(params).map((key) => {
-        return `${params[key]}`;
+    return Object.entries(params).map(([key, value]) => {
+        return `${mapParamsToValues(value)}`;
     });
+};
+
+export const mapParamsToValues = (params) => {
+    return typeof params === "object" ? params.value : params;
+};
+
+export const mapParamsToQuery = (params = {}) => {
+    return Object.entries(params).reduce((acc, [key, value]) => {
+        acc[key] = typeof value === "object" ? value.value : value;
+        return acc;
+    }, {});
+};
+
+export const urlImage = (path, folder = "") => {
+    return `${SERVER_URL}/assets/user/images/${folder !== "" ? `${folder}/` : ""}${path}`;
+};
+
+export const fToNow = (date) => {
+    return formatDistanceToNow(new Date(date), {
+        addSuffix: true,
+        locale: vi,
+    });
+};
+
+export const sortByCreatedAt = (array = []) => {
+    return array.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 };

@@ -1,16 +1,19 @@
 import http from "@/libs/http.lib";
+import { mapParamsToQuery, mapParamsToValues } from "@/utils";
 
 class BaseService {
     constructor(endpoint) {
         this.endpoint = endpoint;
     }
 
-    get(params) {
-        return http.get(this.endpoint, { params });
+    get(params = {}) {
+        return http.get(this.endpoint, { params: mapParamsToQuery(params) });
     }
 
-    getById(id, params) {
-        return http.get(`${this.endpoint}/${id}`, { params });
+    getById(id, params = {}) {
+        return http.get(`${this.endpoint}/${mapParamsToValues(id)}`, {
+            params: mapParamsToQuery(params),
+        });
     }
 
     post(data) {
@@ -18,15 +21,15 @@ class BaseService {
     }
 
     put(id, data) {
-        return http.put(`${this.endpoint}/${id}`, data);
+        return http.put(`${this.endpoint}/${mapParamsToValues(id)}`, data);
     }
 
     delete(id) {
-        return http.delete(`${this.endpoint}/${id}`);
+        return http.delete(`${this.endpoint}/${mapParamsToValues(id)}`);
     }
 
     patch(id, data) {
-        return http.patch(`${this.endpoint}/${id}`, data);
+        return http.patch(`${this.endpoint}/${mapParamsToValues(id)}`, data);
     }
 
     get http() {
