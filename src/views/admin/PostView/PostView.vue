@@ -1,95 +1,106 @@
+
 <script setup>
-import MainTop from '@/components/shared/admin/MainTop';
-import Search from '@/components/ui/Search';
-import { ref } from 'vue';
+import MainTop from "@/components/shared/admin/MainTop";
+import Search from "@/components/ui/Search";
+import { useGetNews } from "@/hooks/news.hook";
+import { computed, ref } from "vue";
+import { useRoute } from "vue-router";
 
 const isChecked = ref(false);
 
+const route = useRoute();
 
-const posts = ref([
-    {
-        id: 1,
-        title: 'Hội thi “Tìm hiểu Chương trình Giáo dục phổ thông mới cấp Tiểu học”',
-        des: 'Chương trình Giáo dục phổ thông tổng thể (2017) và Chương trình giáo dục phổ thông các môn học (Ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26 tháng 12 năm 2018 của Bộ trưởng Bộ GD&ĐT) đã đặt ra những cơ hội và thách thức cho hoạt động đào tạo ở các trường đại học sư phạm, các trường phổ thông trong cả nước. Trước nhiệm vụ phát triển năng lực sư phạm của giáo viên trong bối cảnh mới, Trường Đại học Sư phạm, Đại học Huế đã khuyến khích các đơn vị tổ chức các hoạt động giúp sinh viên tìm hiểu về Chương trình giáo dục phổ thông mới.',
-        img: '/assets/new/1556363043tintuc2.jpg',
-        feature: 1,
-        view: 1
-    },
+const page = computed(() => parseInt(route.query?.page) || 1);
 
-    {
-        id: 2,
-        title: 'Hội thi “Tìm hiểu Chương trình Giáo dực phở thông không cấp Tiểu học”',
-        des: 'Chương trình Giáo dục phổ thông tổng thể (2017) và Chương trình giáo dục phổ thông các môn học (Ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26 tháng 12 năm 2018 của Bộ trưởng Bộ GD&ĐT) đã đặt ra những cơ hội và thách thức cho hoạt động đào tạo ở các trường đại học sư phạm, các trường phổ thông trong cả nước. Trước nhiệm vụ phát triển năng lực sư phạm của giáo viên trong bối cảnh mới, Trường Đại học Sư phạm, Đại học Huế đã khuyến khích các đơn vị tổ chức các hoạt động giúp sinh viên tìm hiểu về Chương trình giáo dục phổ thông mới.',
-        img: '/assets/new/1556363186tintuc3.jpg',
-        feature: 1,
-        view: 2
-    },
-    {
-        id: 2,
-        title: 'Hội thi “Tìm hiểu Chương trình Giáo dực phở thông không cấp Tiểu học”',
-        des: 'Chương trình Giáo dục phổ thông tổng thể (2017) và Chương trình giáo dục phổ thông các môn học (Ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26 tháng 12 năm 2018 của Bộ trưởng Bộ GD&ĐT) đã đặt ra những cơ hội và thách thức cho hoạt động đào tạo ở các trường đại học sư phạm, các trường phổ thông trong cả nước. Trước nhiệm vụ phát triển năng lực sư phạm của giáo viên trong bối cảnh mới, Trường Đại học Sư phạm, Đại học Huế đã khuyến khích các đơn vị tổ chức các hoạt động giúp sinh viên tìm hiểu về Chương trình giáo dục phổ thông mới.',
-        img: '/assets/new/1556363474avatar.jpg',
-        feature: 1,
-        view: 2
-    },
-    {
-        id: 2,
-        title: 'Hội thi “Tìm hiểu Chương trình Giáo dực phở thông không cấp Tiểu học”',
-        des: 'Chương trình Giáo dục phổ thông tổng thể (2017) và Chương trình giáo dục phổ thông các môn học (Ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26 tháng 12 năm 2018 của Bộ trưởng Bộ GD&ĐT) đã đặt ra những cơ hội và thách thức cho hoạt động đào tạo ở các trường đại học sư phạm, các trường phổ thông trong cả nước. Trước nhiệm vụ phát triển năng lực sư phạm của giáo viên trong bối cảnh mới, Trường Đại học Sư phạm, Đại học Huế đã khuyến khích các đơn vị tổ chức các hoạt động giúp sinh viên tìm hiểu về Chương trình giáo dục phổ thông mới.',
-        img: '/assets/new/1556997044hinh1.jpg',
-        feature: 1,
-        view: 4
-    },
-    {
-        id: 2,
-        title: 'Hội thi “Tìm hiểu Chương trình Giáo dực phở thông không cấp Tiểu học”',
-        des: 'Chương trình Giáo dục phổ thông tổng thể (2017) và Chương trình giáo dục phổ thông các môn học (Ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26 tháng 12 năm 2018 của Bộ trưởng Bộ GD&ĐT) đã đặt ra những cơ hội và thách thức cho hoạt động đào tạo ở các trường đại học sư phạm, các trường phổ thông trong cả nước. Trước nhiệm vụ phát triển năng lực sư phạm của giáo viên trong bối cảnh mới, Trường Đại học Sư phạm, Đại học Huế đã khuyến khích các đơn vị tổ chức các hoạt động giúp sinh viên tìm hiểu về Chương trình giáo dục phổ thông mới.',
-        img: '/assets/new/1556997150hinh2.jpg',
-        feature: 1,
-        view: 1
-    },
+const options = computed(() => {
+    return {
+        page,
+        limit: 10,
+    };
+});
 
-]);
+const { data, isLoading } = useGetNews(options.value);
+
+const headers = [
+    { title: "ID", align: "start", key: "id" },
+    { title: "Tiêu đề", align: "start", key: "tieude" },
+    { title: "Mô tả", align: "start", key: "mota" },
+    { title: "Hình ảnh", align: "start", key: "hinhdaidien", sortable: false },
+    { title: "Nổi bật", align: "start", key: "noibat", sortable: false },
+    { title: "Lượt xem", align: "start", key: "luotxem" },
+    { title: "Action", key: "actions", sortable: false },
+];
 </script>
 
 <template>
-    <MainTop title="Danh sách bài viết" sub="Quản lí bài viết" icon="mdi-pencil-box-outline" parent="Tin tức" />
+    <MainTop
+        title="Danh sách bài viết"
+        sub="Quản lí bài viết"
+        icon="mdi-pencil-box-outline"
+        parent="Tin tức"
+    />
 
     <v-card class="mx-30 pa-30">
         <div class="d-flex justify-space-between mb-5">
-            <Search placeholder="Tìm kiếm tên tài khoản..." width="300px" height="45px" widthIcon="54px" />
-            <v-btn color="success" prepend-icon="mdi-plus-circle-outline" class="action-icon-btn" @click="addNew">Thêm
-                mới</v-btn>
+            <Search
+                placeholder="Tìm kiếm tên tài khoản..."
+                width="300px"
+                height="45px"
+                widthIcon="54px"
+            />
+            <v-btn
+                color="success"
+                prepend-icon="mdi-plus-circle-outline"
+                class="action-icon-btn"
+                @click="addNew"
+                >Thêm mới</v-btn
+            >
         </div>
 
-        <v-data-table :headers="headers" :items="desserts" item-key="name">
+        <v-data-table
+            :headers="headers"
+            :items="data?.metadata"
+            :loading="isLoading"
+            item-key="name"
+        >
+            <template v-slot:loading>
+                <v-skeleton-loader type="table-row@5"></v-skeleton-loader>
+            </template>
 
-            <thead class="table-header">
-                <tr>
-                    <th class="text-left">
-                        STT
-                    </th>
-                    <th class=" text-left" style="width: 20%;">
-                        Tiêu đề
-                    </th>
-                    <th class=" text-left" style="width: 40%;">
-                        Mô tả
-                    </th>
-                    <th class=" text-left" style="width: 15%;">
-                        Hình ảnh
-                    </th>
-                    <th class=" text-left">
-                        Nổi bật
-                    </th>
-                    <th class=" text-left">
-                        Lượt xem
-                    </th>
-                    <th class="text-center">
-                        Hành động
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
+            <template v-slot:item.hinhdaidien="{ value }">
+                <div class="post-img">
+                    <v-img :src="value"> </v-img>
+                </div>
+            </template>
+
+            <template v-slot:item.mota="{ value }">
+                <div class="post-des">
+                    <p>{{ value }}</p>
+                </div>
+            </template>
+
+            <template v-slot:item.tieude="{ value }">
+                <div class="post-des">
+                    <p>{{ value }}</p>
+                </div>
+            </template>
+
+            <template v-slot:item.actions="{ item }">
+                <v-icon
+                    class="me-2"
+                    size="small"
+                    color="green"
+                    @click="editItem(item)"
+                >
+                    mdi-pencil
+                </v-icon>
+
+                <v-icon size="small" color="red" @click="deleteItem(item)">
+                    mdi-delete
+                </v-icon>
+            </template>
+
+            <!-- <tbody>
                 <tr v-for="(item, index) in posts" :key="index">
                     <td>{{ item.id }}</td>
                     <td>{{ item.title }}</td>
@@ -100,13 +111,14 @@ const posts = ref([
                     </td>
                     <td>
                         <div class="post-img">
-                            <v-img :src="item.img">
-                            </v-img>
+                            <v-img :src="item.img"> </v-img>
                         </div>
                     </td>
                     <td>
                         <div>
-                            <v-checkbox v-model="isChecked">{{ isChecked ? 'Mở' : 'Tắt' }}</v-checkbox>
+                            <v-checkbox v-model="isChecked">{{
+                                isChecked ? "Mở" : "Tắt"
+                            }}</v-checkbox>
                         </div>
                     </td>
                     <td>{{ item.view }}</td>
@@ -119,13 +131,13 @@ const posts = ref([
                             <v-icon class="mr-2">mdi-pencil-outline</v-icon>
                             Sửa
                         </v-btn>
-                        <v-btn class="action-icon-btn ">
+                        <v-btn class="action-icon-btn">
                             <v-icon class="mr-2">mdi-delete-outline</v-icon>
                             Xóa
                         </v-btn>
                     </td>
                 </tr>
-            </tbody>
+            </tbody> -->
         </v-data-table>
     </v-card>
 </template>
@@ -135,8 +147,6 @@ const posts = ref([
     font-size: 1.2em;
     font-weight: bold;
     border-top: 2px solid #000;
-
-
 }
 
 thead.table-header {

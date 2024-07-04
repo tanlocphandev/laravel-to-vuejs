@@ -1,23 +1,23 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, inject } from 'vue';
-import { ROUTE_PATHS } from '@/constants/route.constant';
-import Search from '@/components/ui/Search';
+import { ref, onMounted, onBeforeUnmount, inject } from "vue";
+import { ROUTE_PATHS } from "@/constants/route.constant";
+import Search from "@/components/ui/Search";
 
-const drawer = inject('drawer');
-const bellShake = ref(false)
+const drawer = inject("drawer");
+const bellShake = ref(false);
 
 onMounted(() => {
     const interval = setInterval(() => {
-        bellShake.value = true
+        bellShake.value = true;
         setTimeout(() => {
-            bellShake.value = false
-        }, 1000)
-    }, 5000)
+            bellShake.value = false;
+        }, 1000);
+    }, 5000);
 
     onBeforeUnmount(() => {
-        clearInterval(interval)
-    })
-})
+        clearInterval(interval);
+    });
+});
 </script>
 
 <template>
@@ -27,27 +27,46 @@ onMounted(() => {
         </div>
         <div class="header-right">
             <div>
-                <v-app-bar-nav-icon @click="drawer = !drawer" class="drawer-icon"></v-app-bar-nav-icon>
-                <v-btn :to=ROUTE_PATHS.Home class="home-page-btn action-icon-btn">Client page</v-btn>
+                <v-app-bar-nav-icon
+                    @click="drawer = !drawer"
+                    class="drawer-icon"
+                ></v-app-bar-nav-icon>
+                <v-btn
+                    :to="ROUTE_PATHS.Home"
+                    class="home-page-btn action-icon-btn"
+                    >Client page</v-btn
+                >
             </div>
             <div class="top-right">
                 <Search width="198px" height="33px" widthIcon="49px" />
 
                 <div class="mx-3">
-                    <v-icon :class="{ 'shake': bellShake }">mdi-bell-outline</v-icon>
+                    <v-icon :class="{ shake: bellShake }"
+                        >mdi-bell-outline</v-icon
+                    >
                 </div>
 
                 <v-menu min-width="200px" rounded>
                     <template v-slot:activator="{ props }">
-                        <v-avatar icon v-bind="props" class="avatar-bg mx-3" color="brown" size="small">
+                        <v-avatar
+                            icon
+                            v-bind="props"
+                            class="avatar-bg mx-3"
+                            color="brown"
+                            size="small"
+                        >
                             <v-icon>mdi-account</v-icon>
                         </v-avatar>
                     </template>
                     <v-card>
                         <v-card-text>
                             <div class="card-avatar">
-                                <v-btn class="custom-btn" variant="text"> Trang cá nhân</v-btn>
-                                <v-btn class="custom-btn" variant="text"> Đăng xuất </v-btn>
+                                <v-btn class="custom-btn" variant="text">
+                                    Trang cá nhân</v-btn
+                                >
+                                <v-btn class="custom-btn" variant="text">
+                                    Đăng xuất
+                                </v-btn>
                             </div>
                         </v-card-text>
                     </v-card>
@@ -75,21 +94,21 @@ onMounted(() => {
 .header-top {
     background-color: var(--primary);
     height: 51px !important;
-    color: var(--white)
+    color: var(--white);
 }
 
 .header-logo {
-    font-family: 'Pacifico', cursive;
+    font-family: "Pacifico", cursive;
     font-size: 24px;
     color: white;
     text-align: center;
     margin: 0;
     padding: 10px;
-    text-decoration: none
+    text-decoration: none;
 }
 
 .header-left {
-    width: 18%;
+    width: 250px;
     height: 100%;
     display: flex;
     align-items: center;
@@ -97,7 +116,7 @@ onMounted(() => {
 }
 
 .header-right {
-    width: 82%;
+    width: calc(100% - 250px + 7px);
     height: 100%;
     display: flex;
     align-items: center;
@@ -129,14 +148,12 @@ onMounted(() => {
     color: var(--white);
 }
 
-
 /* bell */
 .shake {
     animation: shake 1s infinite;
 }
 
 @keyframes shake {
-
     0%,
     100% {
         transform: translateX(0);

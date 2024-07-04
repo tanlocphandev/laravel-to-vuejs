@@ -1,32 +1,82 @@
 <script setup>
-import MainTop from '@/components/shared/admin/MainTop';
+import MainTop from "@/components/shared/admin/MainTop";
+import { useGetMailbox } from "@/hooks/mailbox.hook";
+import { fDate } from "@/utils";
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
+const TAB_OPTIONS = {
+    NORMAL: "NORMAL",
+    ANONYMOUS: "ANONYMOUS",
+    ALL: "ALL",
+};
+
+const route = useRoute();
+const router = useRouter();
+const tabOption = ref(TAB_OPTIONS.NORMAL);
+const page = computed(() => parseInt(route.query?.page) || 1);
+
+const handleChangeTab = (tab) => {
+    tabOption.value = tab;
+};
+
+const handleChangePage = (currentPage) => {
+    router.push({
+        path: route.path,
+        query: { ...route.query, page: currentPage },
+    });
+};
+
+const parserTab = (tab) => {
+    switch (tab.value) {
+        case TAB_OPTIONS.NORMAL:
+            return { "dadoc[eq]": 0 };
+        case TAB_OPTIONS.ANONYMOUS:
+            return { "andanh[eq]": 1 };
+        case TAB_OPTIONS.ALL:
+            return {};
+    }
+};
+
+const options = computed(() => {
+    return {
+        page,
+        limit: 10,
+        ...parserTab(tabOption),
+    };
+});
+
+const { data, isLoading } = useGetMailbox(options.value);
 
 const links = [
     ["mdi-email-outline", "Thư thường", "#", 1],
     ["mdi-eye-off", "Ẩn danh", "#", 0],
     ["mdi-file-document", "Tất cả", "#", 1],
-]
+];
 
 const message = [
     {
-        name: 'Nguyễn Thành An',
-        icon: 'mdi-account',
+        name: "Nguyễn Thành An",
+        icon: "mdi-account",
         content: "0973625733 - Cho em hỏi đã có lịch thi học kì 2 chưa ạ?",
         date: "25-06-2024",
     },
     {
-        name: 'Thi Thi',
-        icon: 'mdi-account-off',
-        content: "0973625733 - Cho em hỏi đã có lịch thi học kì 2 chứ sinh năm 2019 của Đại học Huế",
+        name: "Thi Thi",
+        icon: "mdi-account-off",
+        content:
+            "0973625733 - Cho em hỏi đã có lịch thi học kì 2 chứ sinh năm 2019 của Đại học Huế",
         date: "25-06-2024",
     },
-
-]
-
+];
 </script>
 
 <template>
-    <MainTop title="Hộp thư hỗ trợ" sub="Danh sách hộp thư hỗ trợ từ sinh viên" icon="mdi-pencil-box-outline" />
+    <MainTop
+        title="Hộp thư hỗ trợ"
+        sub="Danh sách hộp thư hỗ trợ từ sinh viên"
+        icon="mdi-pencil-box-outline"
+    />
 
     <div class="mx-30 pa-30">
         <v-row>
@@ -37,16 +87,26 @@ const message = [
 
                 <v-card class="pa-3">
                     <v-list class="card-message pa-0">
-                        <v-list-item v-for="[icon, text, to, count] in links" :key="icon" link :to="to">
+                        <v-list-item
+                            v-for="[icon, text, to, count] in links"
+                            :key="icon"
+                            link
+                            :to="to"
+                        >
                             <template v-slot:default="{ active, toggle }">
                                 <div class="mess-item">
                                     <div class="mess-item-left">
                                         <v-icon class="mr-1">{{ icon }}</v-icon>
                                         <v-list-item-content>
-                                            <v-list-item-title>{{ text }}</v-list-item-title>
+                                            <v-list-item-title>{{
+                                                text
+                                            }}</v-list-item-title>
                                         </v-list-item-content>
                                     </div>
-                                    <div class="mess-item-right" v-if="count && count > 0">
+                                    <div
+                                        class="mess-item-right"
+                                        v-if="count && count > 0"
+                                    >
                                         <span>{{ count }}</span>
                                     </div>
                                 </div>
@@ -58,30 +118,48 @@ const message = [
             <v-col cols="9">
                 <v-card class="pa-3">
                     <div class="mailbox-controls text-end">
-                        <v-btn style="border-radius: 0px;" class="action-icon-btn cus-btn ma-0"
-                            prepend-icon="mdi-delete-outline"></v-btn>
-                        <v-btn style="border-radius: 0px;" class="action-icon-btn cus-btn"
-                            prepend-icon="mdi-eye"></v-btn>
-                        <v-btn style="border-radius: 0px;" class="action-icon-btn cus-btn"
-                            prepend-icon="mdi-reload"></v-btn>
+                        <v-btn
+                            style="border-radius: 0px"
+                            class="action-icon-btn cus-btn ma-0"
+                            prepend-icon="mdi-delete-outline"
+                        ></v-btn>
+                        <v-btn
+                            style="border-radius: 0px"
+                            class="action-icon-btn cus-btn"
+                            prepend-icon="mdi-eye"
+                        ></v-btn>
+                        <v-btn
+                            style="border-radius: 0px"
+                            class="action-icon-btn cus-btn"
+                            prepend-icon="mdi-reload"
+                        ></v-btn>
                     </div>
 
                     <v-table>
                         <tbody>
-                            <tr v-for="(item, index) in message" :key="index">
-                                <td style="width: 10%;">
-                                    <div class="mt-5">
-                                        <v-checkbox></v-checkbox>
-                                    </div>
+                            <tr
+                                v-for="(item, index) in data?.metadata"
+                                :key="index"
+                            >
+                                <td>
+                                    {{ index + 1 }}
                                 </td>
-                                <td style="width: 30%;">
+
+                                <td style="width: 30%">
                                     <div class="user-title">
-                                        <v-icon class="color-primary mr-5">{{ item.icon }}</v-icon>
-                                        <p>{{ item.name }}</p>
+                                        <v-icon class="color-primary mr-5">
+                                            {{ item.icon }}
+                                        </v-icon>
+
+                                        <p>{{ item.hoten }}</p>
                                     </div>
                                 </td>
-                                <td style="width: 40%;">{{ item.content }}</td>
-                                <td>{{ item.date }}</td>
+
+                                <td style="width: 40%">{{ item.noidung }}</td>
+
+                                <td>
+                                    {{ fDate(item.created_at, "DD-MM-YYYY") }}
+                                </td>
                             </tr>
                         </tbody>
                     </v-table>
@@ -105,9 +183,7 @@ const message = [
 
 .card-message {
     background-color: var(--light-gray);
-
 }
-
 
 .v-list-item:hover,
 .v-list-item .v-list-item--active {
@@ -158,6 +234,5 @@ const message = [
 
 .user-title p:hover {
     text-decoration: underline;
-
 }
 </style>

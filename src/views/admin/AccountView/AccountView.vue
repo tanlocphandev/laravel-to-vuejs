@@ -1,97 +1,110 @@
 <script setup>
-import { ref } from 'vue';
-import MainTop from '@/components/shared/admin/MainTop';
-import Search from '@/components/ui/Search';
+import { computed, ref } from "vue";
+import MainTop from "@/components/shared/admin/MainTop";
+import Search from "@/components/ui/Search";
+import { useGetUsers } from "@/hooks/user.hook";
+import { useRoute } from "vue-router";
+import { fDate } from "@/utils";
 
-const users = ref([
-    {
-        id: 1,
-        name: 'Nguyen Van A',
-        email: 'xGqJt@example.com',
-        created_at: '2022-01-01 00:00:00',
-        role: 'Admin'
-    },
-    {
-        id: 2,
-        name: 'Nguyen Van B',
-        email: 'xGqJt@example.com',
-        created_at: '2022-01-01 00:00:00',
-        role: 'Student'
-    },
-    {
-        id: 3,
-        name: 'Nguyen Van C',
-        email: 'xGqJt@example.com',
-        created_at: '2022-01-01 00:00:00',
-        role: 'Teacher'
-    },
-    {
-        id: 4,
-        name: 'Nguyen Van D',
-        email: 'xGqJt@example.com',
-        created_at: '2022-01-01 00:00:00',
-        role: 'User'
-    }
-]);
+const route = useRoute();
 
+const page = computed(() => parseInt(route.query?.page) || 1);
+
+const options = computed(() => {
+    return {
+        page,
+        limit: 10,
+    };
+});
+
+const { data, isLoading } = useGetUsers(options.value);
+
+const headers = [
+    { title: "ID", align: "start", key: "id" },
+    { title: "Tài khoản", align: "start", key: "name" },
+    { title: "Email", align: "start", key: "email" },
+    {
+        title: "Ngày cập nhật",
+        align: "start",
+        key: "updated_at",
+        value: (item) => fDate(item.updated_at, "DD-MM-YYYY HH:mm:ss"),
+    },
+    { title: "Quyền", align: "start", key: "permission" },
+    { title: "Action", key: "actions", sortable: false },
+];
+
+const getColor = (role) => {
+    if (role === "Admin") return "red";
+    else if (role === "SinhVien") return "orange";
+    else return "green";
+};
+
+const editItem = (item) => {
+    console.log(`item editItem:::`, item);
+};
+
+const deleteItem = (item) => {
+    console.log(`item deleteItem:::`, item);
+};
 </script>
 
 <template>
-    <MainTop title="Danh sách tài khoản" sub="Quản lí tài khoản" icon="mdi-pencil-box-outline" />
+    <MainTop
+        title="Danh sách tài khoản"
+        sub="Quản lí tài khoản"
+        icon="mdi-pencil-box-outline"
+    />
 
     <v-card class="mx-30 pa-30">
         <div class="d-flex justify-space-between mb-5">
-            <Search placeholder="Tìm kiếm tên tài khoản..." width="300px" height="45px" widthIcon="54px" />
-            <v-btn color="success" prepend-icon="mdi-plus-circle-outline" class="action-icon-btn" @click="addNew">Thêm
-                mới</v-btn>
+            <Search
+                placeholder="Tìm kiếm tên tài khoản..."
+                width="300px"
+                height="45px"
+                widthIcon="54px"
+            />
+            <v-btn
+                color="success"
+                prepend-icon="mdi-plus-circle-outline"
+                class="action-icon-btn"
+                @click="addNew"
+                >Thêm mới</v-btn
+            >
         </div>
 
-        <v-data-table :headers="headers" :items="desserts" item-key="name">
+        <v-data-table
+            :headers="headers"
+            :items="data?.metadata"
+            :loading="isLoading"
+            density="compact"
+            item-key="name"
+        >
+            <template v-slot:loading>
+                <v-skeleton-loader type="table-row@5"></v-skeleton-loader>
+            </template>
 
-            <thead class="table-header">
-                <tr>
-                    <th class="text-left" style="width: 10%;">
-                        STT
-                    </th>
-                    <th class=" text-left" style="width: 20%;">
-                        Tài khoản
-                    </th>
-                    <th class=" text-left" style="width: 15%;">
-                        Email
-                    </th>
-                    <th class=" text-left" style="width: 15%;">
-                        Ngày cập nhật
-                    </th>
-                    <th class=" text-left" style="width: 10%;">
-                        Quyền
-                    </th>
-                    <th class="text-center" style="width: 25%;">
-                        Hành động
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(item, index) in users" :key="index">
-                    <td>{{ item.id }}</td>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.email }}</td>
-                    <td>{{ item.created_at }}</td>
-                    <td>{{ item.role }}</td>
-                    <td class="action-btn">
-                        <v-btn class="action-icon-btn mr-2" color="primary">
-                            <v-icon class="mr-2">mdi-pencil-outline</v-icon>
-                            Sửa
-                        </v-btn>
-                        <v-btn class="action-icon-btn ">
-                            <v-icon class="mr-2">mdi-delete-outline</v-icon>
-                            Xóa
-                        </v-btn>
-                    </td>
-                </tr>
-            </tbody>
+            <template v-slot:item.permission="{ value }">
+                <v-chip :color="getColor(value)">
+                    {{ value }}
+                </v-chip>
+            </template>
+
+            <template v-slot:item.actions="{ item }">
+                <v-icon
+                    class="me-2"
+                    size="small"
+                    color="green"
+                    @click="editItem(item)"
+                >
+                    mdi-pencil
+                </v-icon>
+
+                <v-icon size="small" color="red" @click="deleteItem(item)">
+                    mdi-delete
+                </v-icon>
+            </template>
         </v-data-table>
     </v-card>
-
 </template>
 
 <style lang="css" scoped>
@@ -105,10 +118,9 @@ const users = ref([
     font-size: 1.2em;
     font-weight: bold;
     border-top: 2px solid #000;
-
 }
 
 thead.table-header {
-    font-size: 18px !important;
+    font-size: 14px !important;
 }
 </style>
