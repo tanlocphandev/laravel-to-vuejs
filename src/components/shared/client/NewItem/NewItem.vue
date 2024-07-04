@@ -3,10 +3,10 @@ defineProps({
     title: String,
     description: String,
     imageUrl: String,
-    date: String,
-    time: String,
+    datetime: String,
     views: Number,
     comments: Number,
+    id: Number,
 });
 </script>
 
@@ -18,24 +18,29 @@ defineProps({
             </div>
         </div>
         <div class="description-right">
-            <h1><router-link :to="{ name: 'news_details', params: { id: 1 } }">{{ title }}</router-link></h1>
+            <h1>
+                <router-link :to="{ name: 'news_details', params: { id } }">{{
+                    title
+                }}</router-link>
+            </h1>
+
             <div class="description-sub">
                 <v-icon class="mr-1"> mdi-calendar</v-icon>
-                <p class="mr-1 text-8 ">{{ date }}</p>
-                <p class="mr-2 text-8 ">{{ time }}</p>
-                <div class="mr-1">
+                <p class="mr-1 text-8">{{ datetime }}</p>
+
+                <div class="mx-4">
                     <v-icon class="mr-1">mdi-eye</v-icon>
-                    <p class="text-8 ">{{ views }}</p>
+                    <p class="text-8">{{ views }}</p>
                 </div>
                 <div>
                     <v-icon class="mr-1">mdi-comment</v-icon>
-                    <p class="text-8 ">{{ comments }} bình luận</p>
+                    <p class="text-8">{{ comments }} bình luận</p>
                 </div>
             </div>
-            <p class="mt-1 description-text">{{ description }}</p>
+
+            <p class="mt-1 description-text text-justify">{{ description }}</p>
         </div>
     </div>
-
 </template>
 
 <style lang="css" scoped>
@@ -52,7 +57,7 @@ defineProps({
 /* left */
 
 .description-left {
-    text-align: start
+    text-align: start;
 }
 
 .content-img .v-img {
@@ -66,7 +71,6 @@ defineProps({
     flex-direction: column;
     margin: 0 18px;
 }
-
 
 .description-right h1 a {
     text-decoration: none;

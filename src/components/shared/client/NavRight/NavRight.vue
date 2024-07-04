@@ -1,39 +1,55 @@
 <script setup>
-const news = [
-    [
-        "assets/new/1556363043tintuc2.jpg",
-        "Tưng bừng Hội trại nghiệp vụ Trường Đại học Sư phạm, Đại học Huế",
-    ],
-    [
-        "assets/new/1556363186tintuc3.jpg",
-        "Tưng bừng Hội trại nghiệp vụ Trường Đại học Sư phạm, Đại học Huế",
-    ],
-    [
-        "assets/new/1556363474avatar.jpg",
-        "Tưng bừng Hội trại nghiệp vụ Trường Đại học Sư phạm, Đại học Huế",
-    ],
-    [
-        "assets/new/1556997044hinh1.jpg",
-        "Tưng bừng Hội trại nghiệp vụ Trường Đại học Sư phạm, Đại học Huế",
-    ],
-    [
-        "assets/new/1556997150hinh2.jpg",
-        "Tưng bừng Hội trại nghiệp vụ Trường Đại học Sư phạm, Đại học Huế",
-    ],
-];
+import { useGetNews } from "@/hooks/news.hook";
+import { ref } from "vue";
+
+const page = ref(1);
+const LIMIT = 5;
+
+const { data, isLoading } = useGetNews({
+    page: page,
+    limit: LIMIT,
+    sort: "created_at",
+    order: "asc",
+});
 </script>
 
 <template>
-    <div>
+    <v-container v-if="isLoading">
+        <v-row>
+            <v-col cols="12" md="12">
+                <v-skeleton-loader type="heading"></v-skeleton-loader>
+            </v-col>
+
+            <v-col v-for="item in 5" :key="item" cols="12" md="12" class="border">
+                <v-row>
+                    <v-col cols="6" md="6">
+                        <v-skeleton-loader class="image" type="image"></v-skeleton-loader>
+                    </v-col>
+
+                    <v-col cols="6" md="6">
+                        <v-skeleton-loader type="article"></v-skeleton-loader>
+                    </v-col>
+                </v-row>
+            </v-col>
+        </v-row>
+    </v-container>
+
+    <div v-else>
         <div class="text-center text-title">Tin tức nổi bật</div>
+
         <div class="content-nav">
             <div class="content-nav-list">
-                <div class="content-nav-item" v-for="(item, index) in news" :key="index">
+                <router-link
+                    class="content-nav-item"
+                    v-for="(item, index) in data?.metadata"
+                    :key="index"
+                    :to="{ name: 'news_details', params: { id: item?.id } }"
+                >
                     <div class="content-nav-img">
-                        <v-img :src="item[0]" class="image" aspect-ratio="16/9"></v-img>
+                        <v-img :src="item?.hinhdaidien" class="image" aspect-ratio="16/9"></v-img>
                     </div>
-                    <div class="content-nav-title">{{ item[1] }}</div>
-                </div>
+                    <div class="content-nav-title">{{ item?.tieude }}</div>
+                </router-link>
             </div>
         </div>
     </div>
@@ -58,8 +74,8 @@ const news = [
     color: var(--black);
     padding: 0;
     border-radius: 4px;
-    height: 80vh;
-    overflow: hidden;
+    height: 50vh;
+    /* overflow: hidden; */
     position: relative;
     display: flex;
     flex-direction: column;
@@ -85,6 +101,7 @@ const news = [
     align-items: center;
     padding: 15px;
     cursor: pointer;
+    text-decoration: none;
 }
 
 .content-nav-item:hover {

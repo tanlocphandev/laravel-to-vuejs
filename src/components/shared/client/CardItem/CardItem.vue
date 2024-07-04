@@ -21,11 +21,17 @@ defineProps({
         <div class="text-content">
             <div class="description">
                 <div class="description-left">
-                    <div v-for="(link, index) in news" :key="index" class="item">
+                    <router-link
+                        v-for="(link, index) in news"
+                        :key="index"
+                        :to="{ name: 'news_details', params: { id: link.id } }"
+                        class="item"
+                    >
                         <v-icon class="mr-1">mdi-cursor-pointer</v-icon>
                         <p>{{ link.tieude }}</p>
-                    </div>
+                    </router-link>
                 </div>
+
                 <div class="description-right">
                     <div class="content-top">
                         <div class="content-img">
@@ -102,6 +108,7 @@ defineProps({
     display: flex;
     margin-bottom: 8px;
     color: #777373;
+    text-decoration: none;
 }
 
 .description-left .item:hover {

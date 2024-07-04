@@ -9,6 +9,10 @@ class BaseService {
         return http.get(this.endpoint, { params });
     }
 
+    getById(id, params) {
+        return http.get(`${this.endpoint}/${id}`, { params });
+    }
+
     post(data) {
         return http.post(this.endpoint, data);
     }

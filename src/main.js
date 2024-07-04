@@ -10,7 +10,7 @@ import vueQueryPluginOptions from "@/configs/query.config";
 
 const app = createApp(App);
 
-app.use(VueQueryPlugin, vueQueryPluginOptions);
+app.use(VueQueryPlugin);
 app.use(router);
 app.use(pinia);
 app.use(vuetify);

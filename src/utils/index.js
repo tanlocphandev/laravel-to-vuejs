@@ -17,3 +17,9 @@ export function getCurrentTime() {
 export const fDate = (date, format = "DD MMMM YYYY") => {
     return moment(date).format(format);
 };
+
+export const paramsToArrString = (params = {}) => {
+    return Object.keys(params).map((key) => {
+        return `${params[key]}`;
+    });
+};
