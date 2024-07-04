@@ -19,4 +19,10 @@ class ChiTietBinhLuan extends Model
     {
         return $this->belongsTo('App\User', 'id_user', 'id');
     }
+
+    // Create scope http://laravel.com/docs/5.0/eloquent#query-scopes
+    public function scopeLatest($query)
+    {
+        return $query->orderBy('created_at', 'asc');
+    }
 }

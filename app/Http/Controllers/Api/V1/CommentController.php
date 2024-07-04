@@ -39,6 +39,7 @@ class CommentController extends Controller
 
         if ($includeCommentDetails == 'true') {
             $data->with('chitietbinhluan');
+            $data->with('chitietbinhluan.user');
         }
 
         $data = $data->orderBy($request->query('sort', 'id'), $request->query('order', 'desc'))->paginate($request->query('limit', 10))->appends($request->query());
