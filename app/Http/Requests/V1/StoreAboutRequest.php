@@ -4,7 +4,7 @@ namespace App\Http\Requests\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ChangeDisplayCategoryRequest extends FormRequest
+class StoreAboutRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,9 +23,14 @@ class ChangeDisplayCategoryRequest extends FormRequest
      */
     public function rules()
     {
+        if ($this->isMethod('POST')) {
+            return [
+                'gioithieu' => 'required|string',
+            ];
+        }
+
         return [
-            'hiddenIds' => 'sometimes|array',
-            'displayIds' => 'required|array',
+            'gioithieu' => 'sometimes|required|string',
         ];
     }
 }

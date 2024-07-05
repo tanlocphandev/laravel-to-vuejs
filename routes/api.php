@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AboutController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\CommentController;
@@ -30,6 +31,7 @@ Route::prefix('v1')->middleware('cors')->group(function () {
     Route::post('categories/sort/priority', [CategoryController::class, 'sortPriority']);
     Route::post('categories/change/display', [CategoryController::class, 'changeDisplay']);
 
+    Route::apiResource('about', AboutController::class);
     Route::apiResource('news-types', NewsTypesController::class);
     Route::apiResource('mailbox', MailboxController::class);
     Route::apiResource('news', NewsController::class);

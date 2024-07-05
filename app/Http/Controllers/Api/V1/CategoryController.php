@@ -173,15 +173,11 @@ class CategoryController extends Controller
     {
         $data = $request->all();
 
-        $updatedHiddenIds = TheLoai::whereIn('id', $data['hiddenIds'])
+        TheLoai::whereIn('id', $data['hiddenIds'])
             ->update(['hienthi' => 0]);
 
-        $updatedDisplayIds = TheLoai::whereIn('id', $data['displayIds'])
+        TheLoai::whereIn('id', $data['displayIds'])
             ->update(['hienthi' => 1]);
-
-        if (!$updatedHiddenIds || !$updatedDisplayIds) {
-            return (new NotFoundException('Không thay đổi hiện thị!'))->sendError();
-        }
 
         $response = new OkResponse("Thay đổi hiển thị thành công", []);
 
