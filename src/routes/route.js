@@ -1,5 +1,5 @@
 import NProgress from "nprogress";
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, RouterView } from "vue-router";
 import { ROUTE_PATHS } from "../constants/route.constant";
 
 // VIEW IMPORT LAYOUT
@@ -26,6 +26,7 @@ const AdminCategoryView = () => import("@/views/admin/CategoryView");
 const AdminPostView = () => import("@/views/admin/PostView");
 const AdminAccountView = () => import("@/views/admin/AccountView");
 const AdminMessageView = () => import("@/views/admin/MessageView");
+const AddEditCategory = () => import("@/views/admin/CategoryView/AddEditCategory.vue");
 
 /**
  * @type {import("vue-router").RouteRecordRaw}
@@ -52,7 +53,7 @@ const routes = [
             },
             {
                 path: ROUTE_PATHS.Personnel + "/detail/:id",
-                name: 'person_details',
+                name: "person_details",
                 component: PersonnelDetailView,
                 meta: { title: "Nhân sự chi tiết" },
             },
@@ -63,7 +64,7 @@ const routes = [
             },
             {
                 path: ROUTE_PATHS.News + "/detail/:id",
-                name: 'news_details',
+                name: "news_details",
                 component: NewDetailView,
                 meta: { title: "Tin Tức chi tiết" },
             },
@@ -88,7 +89,6 @@ const routes = [
                 component: AdminHomeView,
                 meta: { title: "Dashboard" },
                 sensitive: true,
-
             },
             {
                 path: ROUTE_PATHS.AdminAbout(),
@@ -104,18 +104,30 @@ const routes = [
             },
             {
                 path: ROUTE_PATHS.AdminCategory(),
-                component: AdminCategoryView,
-                meta: { title: "Loại tin" },
-                sensitive: true,
+                component: RouterView,
                 children: [
                     {
-                        path: ROUTE_PATHS.AdminCategory() + "add",
+                        path: "",
                         component: AdminCategoryView,
+                        name: "category",
+                        meta: { title: "Loại tin" },
+                        sensitive: true,
+                    },
+                    {
+                        path: "add",
+                        component: AddEditCategory,
+                        name: "category_create",
                         meta: { title: "Thêm loại tin" },
                         sensitive: true,
                     },
-
-                ]
+                    {
+                        path: "edit/:id",
+                        component: AddEditCategory,
+                        name: "category_edit",
+                        meta: { title: "Cập nhật loại tin" },
+                        sensitive: true,
+                    },
+                ],
             },
             {
                 path: ROUTE_PATHS.AdminPost(),

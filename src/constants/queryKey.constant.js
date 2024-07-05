@@ -11,6 +11,7 @@ const queryKeys = {
     },
     newsTypes: {
         GET_ALL: "GET_ALL_NEWS_TYPES",
+        GET_BY_ID: "GET_NEWS_TYPE_BY_ID",
     },
     about: {
         GET: "GET_ABOUT",

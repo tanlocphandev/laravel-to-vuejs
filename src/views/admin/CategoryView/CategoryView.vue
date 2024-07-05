@@ -2,12 +2,21 @@
 import MainTop from "@/components/shared/admin/MainTop";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useGetNewsTypes } from "@/hooks/newsTypes.hook";
+import {
+    useGetNewsTypes,
+    useMutationDeleteNewsTypes,
+} from "@/hooks/newsTypes.hook";
+import DeleteConfirmDialog from "@/components/shared/dialog/DeleteConfirmDialog.vue";
+import { useQueryClient } from "@tanstack/vue-query";
+import { getQueryKeys } from "@/utils";
+import queryKeys from "@/constants/queryKey.constant";
 
 const router = useRouter();
 const route = useRoute();
 const page = computed(() => parseInt(route.query?.page) || 1);
 const LIMIT = 10;
+const openDialog = ref(false);
+const selectedDelete = ref(null);
 
 const options = computed(() => {
     return {
@@ -18,25 +27,8 @@ const options = computed(() => {
 });
 
 const { data, isLoading } = useGetNewsTypes(options.value);
-
-const desserts = [
-    {
-        name: "Chung",
-        cate: "Thông báo",
-    },
-    {
-        name: "Trường",
-        cate: "Thông báo",
-    },
-    {
-        name: "Chung",
-        cate: "Tin tức",
-    },
-    {
-        name: "Trường",
-        cate: "Tin tức",
-    },
-];
+const mutationDelete = useMutationDeleteNewsTypes();
+const queryClient = useQueryClient();
 
 const headers = [
     { title: "ID", align: "start", key: "id", maxWidth: 50 },
@@ -62,6 +54,32 @@ const onchangePage = (currentPage) => {
         query: { ...route.query, page: currentPage },
     });
 };
+
+const handleClose = (value) => {
+    openDialog.value = value;
+    selectedDelete.value = null;
+};
+
+const handleConfirm = (callback) => {
+    mutationDelete.mutate(selectedDelete.value.id, {
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: getQueryKeys({
+                    key: queryKeys.newsTypes.GET_ALL,
+                    ...options.value,
+                }),
+                exact: true,
+            });
+            handleClose();
+            callback();
+        },
+    });
+};
+
+const deleteItem = (item) => {
+    openDialog.value = true;
+    selectedDelete.value = item;
+};
 </script>
 
 <template>
@@ -72,15 +90,27 @@ const onchangePage = (currentPage) => {
         parent="Tin tức"
     />
 
+    <delete-confirm-dialog
+        :open="openDialog"
+        @update:open="handleClose"
+        @confirm="handleConfirm"
+    />
+
     <v-card class="mx-30 pa-30 cate-card">
         <div class="d-flex justify-space-between">
             <v-card-title class="mb-5">Danh sách loại tin</v-card-title>
-            <v-btn
-                prepend-icon="mdi-plus-circle-outline"
-                class="action-icon-btn"
-                color="success"
-                >Thêm mới</v-btn
+            <router-link
+                :to="{ name: 'category_create' }"
+                class="text-decoration-none text-white"
             >
+                <v-btn
+                    prepend-icon="mdi-plus-circle-outline"
+                    class="action-icon-btn"
+                    color="success"
+                >
+                    Thêm mới
+                </v-btn>
+            </router-link>
         </div>
 
         <v-data-table
@@ -114,14 +144,13 @@ const onchangePage = (currentPage) => {
             </template>
 
             <template v-slot:item.actions="{ item }">
-                <v-icon
-                    class="me-2"
-                    size="small"
-                    color="green"
-                    @click="editItem(item)"
+                <router-link
+                    :to="{ name: 'category_edit', params: { id: item.id } }"
                 >
-                    mdi-pencil
-                </v-icon>
+                    <v-icon class="me-2" size="small" color="green">
+                        mdi-pencil
+                    </v-icon>
+                </router-link>
 
                 <v-icon size="small" color="red" @click="deleteItem(item)">
                     mdi-delete

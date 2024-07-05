@@ -13,7 +13,7 @@ const useGetCategory = (params = {}) => {
         queryKey: queryKeyCategory(params),
         queryFn: () => categoryService.get(params),
         keepPreviousData: true,
-        // staleTime: 5 * 1000,
+        staleTime: 5 * 1000,
     });
 
     return { data, isPending, isLoading };
