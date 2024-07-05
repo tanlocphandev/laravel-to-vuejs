@@ -35,6 +35,14 @@ class NewsTypesController extends Controller
             $data = $data->with('tintuc');
         }
 
+        if ($request->query('all', 0) == 1) {
+            $data = $data->get();
+
+            $result = $data->toArray();
+
+            return (new OkResponse("Get all news types successfully", $result))->send();
+        }
+
         $data = $data->paginate($request->query('limit', 10))->appends($request->query());
 
         $response = new OkResponse("Get all news types successfully", $data->items());

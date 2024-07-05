@@ -32,6 +32,21 @@ class MailboxController extends Controller
         return $response->pagination($data)->send();
     }
 
+    public function getCount()
+    {
+        $countAll = HopThu::where('dadoc', '=', 0)->count();
+        $countAnonymous = HopThu::where('dadoc', '=', 0)->where('andanh', '=', 1)->count();
+        $countNormal = HopThu::where('dadoc', '=', 0)->where('andanh', '=', 0)->count();
+
+        $response = [
+            'countAll' => $countAll,
+            'countAnonymous' => $countAnonymous,
+            'countNormal' => $countNormal
+        ];
+
+        return (new OkResponse("Lấy danh sách hộp thư thành công.", $response))->send();
+    }
+
     /**
      * Store a newly created resource in storage.
      *

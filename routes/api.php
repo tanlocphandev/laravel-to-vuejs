@@ -33,6 +33,7 @@ Route::prefix('v1')->middleware('cors')->group(function () {
 
     Route::apiResource('about', AboutController::class);
     Route::apiResource('news-types', NewsTypesController::class);
+    Route::get('mailbox/get/count', [MailboxController::class, 'getCount']);
     Route::apiResource('mailbox', MailboxController::class);
     Route::apiResource('news', NewsController::class);
     Route::apiResource('comments', CommentController::class);
