@@ -44,18 +44,14 @@ const submit = () => {
         !payload.noidung ||
         !payload.dienthoai
     ) {
-        toast.error("Vui lòng nhập đầy đủ thông tin!", {
-            position: "bottom-center",
-        });
+        toast.error("Vui lòng nhập đầy đủ thông tin!", {});
         return;
     }
 
     // Handle form submission
     mutate(payload, {
         onSuccess: () => {
-            toast.success("Đã gửi thành công!", {
-                position: "bottom-center",
-            });
+            toast.success("Đã gửi thành công!", {});
 
             hideForm();
             handleResetValue();
@@ -71,18 +67,14 @@ const submitAnonymous = () => {
 
     // Validate anonymous form data
     if (!anonymousData.noidung) {
-        toast.error("Vui lòng điền nội dung cần hỗ trợ!", {
-            position: "bottom-center",
-        });
+        toast.error("Vui lòng điền nội dung cần hỗ trợ!", {});
         return;
     }
 
     // Handle anonymous form submission
     mutate(anonymousData, {
         onSuccess: () => {
-            toast.success("Đã gửi thành công!", {
-                position: "bottom-center",
-            });
+            toast.success("Đã gửi thành công!", {});
 
             hideForm();
             handleResetValue();

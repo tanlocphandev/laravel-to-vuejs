@@ -1,22 +1,53 @@
 import queryKeys from "@/constants/queryKey.constant";
 import mailboxService from "@/services/mailbox.service";
-import { paramsToArrString } from "@/utils";
+import { getQueryKeys } from "@/utils";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import { isAxiosError } from "axios";
 import { computed } from "vue";
 import { toast } from "vue-sonner";
 
-export const queryKeysGetAllMailbox = ({ page, limit = 10, ...others }) => {
-    return [queryKeys.news.GET_ALL, page.value, limit, ...paramsToArrString(others)];
+const TAB_OPTIONS = {
+    NORMAL: "NORMAL",
+    ANONYMOUS: "ANONYMOUS",
+    ALL: "ALL",
+};
+
+export const queryKeysGetAllMailbox = (params = {}) => {
+    return getQueryKeys({ key: queryKeys.mailbox.GET_ALL, ...params });
 };
 
 export const useGetMailbox = (params = {}) => {
-    const { page, limit = 3, ...others } = params;
+    const computedParams = computed(() => {
+        return Object.entries(params).reduce((acc, [key, value]) => {
+            if (key === "tab") {
+                const conditions =
+                    value.value?.toLowerCase() === TAB_OPTIONS.NORMAL.toLowerCase()
+                        ? { "dadoc[eq]": 0, "andanh[eq]": 0 }
+                        : value.value?.toLowerCase() === TAB_OPTIONS.ANONYMOUS.toLowerCase()
+                        ? { "andanh[eq]": 1 }
+                        : {
+                              limit: 99999999,
+                          };
+
+                const entries = Object.entries(conditions);
+
+                if (entries.length) {
+                    entries.forEach(([_key, _value]) => {
+                        acc[_key] = _value;
+                    });
+                }
+            } else {
+                acc[key] = value;
+            }
+
+            return acc;
+        }, {});
+    });
 
     const options = computed(() => {
         return {
-            queryKey: queryKeysGetAllMailbox({ page, limit, ...others }),
-            queryFn: () => mailboxService.get({ page, limit, ...others }),
+            queryKey: queryKeysGetAllMailbox(computedParams.value),
+            queryFn: () => mailboxService.get(computedParams.value),
             staleTime: 5 * 1000,
             keepPreviousData: true,
         };
@@ -50,6 +81,39 @@ export const useMutationAddMailbox = () => {
                     toast.error(error.message);
                 }
             }
+        },
+    });
+};
+
+export const useMutationEditMailbox = () => {
+    return useMutation({
+        mutationFn: (data) => {
+            return mailboxService.put(data.id, data);
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        },
+    });
+};
+
+export const useGetCountMailbox = () => {
+    return useQuery({
+        queryKey: getQueryKeys({ key: queryKeys.mailbox.COUNT }),
+        queryFn: () => mailboxService.getCount(),
+        staleTime: 5 * 1000,
+        keepPreviousData: true,
+        select: (data) => {
+            if (!data?.metadata) return null;
+
+            console.log(`data?.metadata:::`, data?.metadata);
+
+            const { countAll, countAnonymous, countNormal } = data.metadata;
+
+            return {
+                NORMAL: countNormal,
+                ANONYMOUS: countAnonymous,
+                ALL: countAll,
+            };
         },
     });
 };

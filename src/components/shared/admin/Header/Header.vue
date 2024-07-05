@@ -1,22 +1,22 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, inject } from "vue";
+import { ref, onMounted, onBeforeUnmount, inject, computed } from "vue";
 import { ROUTE_PATHS } from "@/constants/route.constant";
 import Search from "@/components/ui/Search";
+import { useGetCountMailbox } from "@/hooks/mailbox.hook";
 
 const drawer = inject("drawer");
-const bellShake = ref(false);
 
-onMounted(() => {
-    const interval = setInterval(() => {
-        bellShake.value = true;
-        setTimeout(() => {
-            bellShake.value = false;
-        }, 1000);
-    }, 5000);
+const { data } = useGetCountMailbox();
 
-    onBeforeUnmount(() => {
-        clearInterval(interval);
-    });
+const countMailbox = computed(() => {
+    if (!data?.value) return false;
+
+    return (
+        Object.entries(data.value).reduce(
+            (acc, [key, value]) => (acc += value),
+            0
+        ) > 0
+    );
 });
 </script>
 
@@ -41,9 +41,11 @@ onMounted(() => {
                 <Search width="198px" height="33px" widthIcon="49px" />
 
                 <div class="mx-3">
-                    <v-icon :class="{ shake: bellShake }"
-                        >mdi-bell-outline</v-icon
-                    >
+                    <router-link to="/admin/message" class="text-white">
+                        <v-icon :class="countMailbox ? 'shake' : ''">
+                            mdi-bell-outline
+                        </v-icon>
+                    </router-link>
                 </div>
 
                 <v-menu min-width="200px" rounded>

@@ -16,6 +16,10 @@ const queryKeys = {
     about: {
         GET: "GET_ABOUT",
     },
+    mailbox: {
+        GET_ALL: "GET_ALL_MAILBOX",
+        COUNT: "COUNT_MAILBOX",
+    },
 };
 
 export default queryKeys;

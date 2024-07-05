@@ -1,9 +1,17 @@
 <script setup>
 import MainTop from "@/components/shared/admin/MainTop";
-import { useGetMailbox } from "@/hooks/mailbox.hook";
-import { fDate } from "@/utils";
-import { computed, ref } from "vue";
+import queryKeys from "@/constants/queryKey.constant";
+import {
+    queryKeysGetAllMailbox,
+    useGetCountMailbox,
+    useGetMailbox,
+    useMutationEditMailbox,
+} from "@/hooks/mailbox.hook";
+import { fDate, getQueryKeys } from "@/utils";
+import { useQueryClient } from "@tanstack/vue-query";
+import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { toast } from "vue-sonner";
 
 const TAB_OPTIONS = {
     NORMAL: "NORMAL",
@@ -13,62 +21,129 @@ const TAB_OPTIONS = {
 
 const route = useRoute();
 const router = useRouter();
-const tabOption = ref(TAB_OPTIONS.NORMAL);
+const tabOption = computed(() => route.query?.tab || TAB_OPTIONS.NORMAL);
+const { mutate } = useMutationEditMailbox();
+const queryClient = useQueryClient();
+
 const page = computed(() => parseInt(route.query?.page) || 1);
-
-const handleChangeTab = (tab) => {
-    tabOption.value = tab;
-};
-
-const handleChangePage = (currentPage) => {
-    router.push({
-        path: route.path,
-        query: { ...route.query, page: currentPage },
-    });
-};
-
-const parserTab = (tab) => {
-    switch (tab.value) {
-        case TAB_OPTIONS.NORMAL:
-            return { "dadoc[eq]": 0 };
-        case TAB_OPTIONS.ANONYMOUS:
-            return { "andanh[eq]": 1 };
-        case TAB_OPTIONS.ALL:
-            return {};
-    }
-};
 
 const options = computed(() => {
     return {
         page,
         limit: 10,
-        ...parserTab(tabOption),
+        tab: tabOption,
     };
 });
 
 const { data, isLoading } = useGetMailbox(options.value);
+const { data: counts } = useGetCountMailbox();
+
+console.log(`counts::`, counts.value);
 
 const links = [
-    ["mdi-email-outline", "Thư thường", "#", 1],
-    ["mdi-eye-off", "Ẩn danh", "#", 0],
-    ["mdi-file-document", "Tất cả", "#", 1],
+    [
+        "mdi-email-outline",
+        "Thư thường",
+        `${route.path}?tab=${TAB_OPTIONS.NORMAL}`,
+        TAB_OPTIONS.NORMAL,
+    ],
+    [
+        "mdi-eye-off",
+        "Ẩn danh",
+        `${route.path}?tab=${TAB_OPTIONS.ANONYMOUS}`,
+        TAB_OPTIONS.ANONYMOUS,
+    ],
+    [
+        "mdi-file-document",
+        "Tất cả",
+        `${route.path}?tab=${TAB_OPTIONS.ALL}`,
+        TAB_OPTIONS.ALL,
+    ],
 ];
 
-const message = [
+const headers = [
+    { title: "ID", align: "start", key: "id", maxWidth: 50 },
     {
-        name: "Nguyễn Thành An",
-        icon: "mdi-account",
-        content: "0973625733 - Cho em hỏi đã có lịch thi học kì 2 chưa ạ?",
-        date: "25-06-2024",
+        title: "Họ và tên",
+        align: "start",
+        key: "hoten",
+        maxWidth: 150,
     },
     {
-        name: "Thi Thi",
-        icon: "mdi-account-off",
-        content:
-            "0973625733 - Cho em hỏi đã có lịch thi học kì 2 chứ sinh năm 2019 của Đại học Huế",
-        date: "25-06-2024",
+        title: "Nội dung",
+        align: "start",
+        key: "noidung",
+        maxWidth: 200,
     },
+    {
+        title: "Trạng thái",
+        align: "center",
+        key: "dadoc",
+        maxWidth: 200,
+    },
+    {
+        title: "Ngày gửi",
+        align: "start",
+        key: "created_at",
+        maxWidth: 200,
+
+        value: (value) => fDate(value.created_at, "DD-MM-YYYY HH:mm:ss"),
+    },
+    { title: "Đánh dấu đã đọc", key: "actions", sortable: false },
 ];
+
+const onSelectedRed = (item) => {
+    const payload = {
+        dadoc: true,
+        id: item.id,
+    };
+
+    const computedParams = computed(() => {
+        return Object.entries(options.value).reduce((acc, [key, value]) => {
+            if (key === "tab") {
+                const conditions =
+                    value.value?.toLowerCase() ===
+                    TAB_OPTIONS.NORMAL.toLowerCase()
+                        ? { "dadoc[eq]": 0, "andanh[eq]": 0 }
+                        : value.value?.toLowerCase() ===
+                          TAB_OPTIONS.ANONYMOUS.toLowerCase()
+                        ? { "andanh[eq]": 1 }
+                        : {
+                              limit: 99999999,
+                          };
+
+                const entries = Object.entries(conditions);
+
+                if (entries.length) {
+                    entries.forEach(([_key, _value]) => {
+                        acc[_key] = _value;
+                    });
+                }
+            } else {
+                acc[key] = value;
+            }
+
+            return acc;
+        }, {});
+    });
+
+    mutate(payload, {
+        onSuccess: () => {
+            queryClient.invalidateQueries([
+                {
+                    queryKey: queryKeysGetAllMailbox(computedParams.value),
+                    exact: true,
+                },
+                {
+                    queryKey: getQueryKeys({ key: queryKeys.mailbox.COUNT }),
+                    exact: true,
+                },
+            ]);
+
+            toast.success("Đánh dấu đã đọc thành công");
+        },
+    });
+};
 </script>
 
 <template>
@@ -88,26 +163,28 @@ const message = [
                 <v-card class="pa-3">
                     <v-list class="card-message pa-0">
                         <v-list-item
-                            v-for="[icon, text, to, count] in links"
+                            v-for="[icon, text, to, tab] in links"
                             :key="icon"
                             link
                             :to="to"
+                            :class="tabOption === tab ? 'active' : ''"
                         >
-                            <template v-slot:default="{ active, toggle }">
-                                <div class="mess-item">
+                            <template v-slot:default="{}">
+                                <div :class="'mess-item'">
                                     <div class="mess-item-left">
                                         <v-icon class="mr-1">{{ icon }}</v-icon>
                                         <v-list-item-content>
-                                            <v-list-item-title>{{
-                                                text
-                                            }}</v-list-item-title>
+                                            <v-list-item-title>
+                                                {{ text }}
+                                            </v-list-item-title>
                                         </v-list-item-content>
                                     </div>
+
                                     <div
                                         class="mess-item-right"
-                                        v-if="count && count > 0"
+                                        v-if="counts && counts?.[tab] && counts?.[tab] > 0"
                                     >
-                                        <span>{{ count }}</span>
+                                        <span>{{ counts?.[tab] }}</span>
                                     </div>
                                 </div>
                             </template>
@@ -117,52 +194,38 @@ const message = [
             </v-col>
             <v-col cols="9">
                 <v-card class="pa-3">
-                    <div class="mailbox-controls text-end">
-                        <v-btn
-                            style="border-radius: 0px"
-                            class="action-icon-btn cus-btn ma-0"
-                            prepend-icon="mdi-delete-outline"
-                        ></v-btn>
-                        <v-btn
-                            style="border-radius: 0px"
-                            class="action-icon-btn cus-btn"
-                            prepend-icon="mdi-eye"
-                        ></v-btn>
-                        <v-btn
-                            style="border-radius: 0px"
-                            class="action-icon-btn cus-btn"
-                            prepend-icon="mdi-reload"
-                        ></v-btn>
-                    </div>
+                    <v-data-table
+                        :headers="headers"
+                        :items="data?.metadata"
+                        :loading="isLoading"
+                        :hide-default-footer="true"
+                        item-key="name"
+                        hover
+                    >
+                        <template v-slot:loading>
+                            <v-skeleton-loader
+                                type="table-row@5"
+                            ></v-skeleton-loader>
+                        </template>
 
-                    <v-table>
-                        <tbody>
-                            <tr
-                                v-for="(item, index) in data?.metadata"
-                                :key="index"
-                            >
-                                <td>
-                                    {{ index + 1 }}
-                                </td>
+                        <template v-slot:item.hoten="{ value }">
+                            <div class="user-title">
+                                <p>{{ value }}</p>
+                            </div>
+                        </template>
 
-                                <td style="width: 30%">
-                                    <div class="user-title">
-                                        <v-icon class="color-primary mr-5">
-                                            {{ item.icon }}
-                                        </v-icon>
+                        <template v-slot:item.dadoc="{ value }">
+                            <p :class="Boolean(value) ? 'text-green' : 'text-red'">
+                                <p>{{ (Boolean(value) ? "Đã đọc" : "Chưa đọc") }}</p>
+                            </p>
+                        </template>
 
-                                        <p>{{ item.hoten }}</p>
-                                    </div>
-                                </td>
-
-                                <td style="width: 40%">{{ item.noidung }}</td>
-
-                                <td>
-                                    {{ fDate(item.created_at, "DD-MM-YYYY") }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </v-table>
+                        <template v-slot:item.actions="{ item }">
+                            <v-icon v-if="!Boolean(item.dadoc)" @click="onSelectedRed(item)" class="me-2 cursor-pointer" size="small" color="green">
+                                mdi-checkbox-multiple-marked-circle-outline
+                            </v-icon>    
+                        </template>
+                    </v-data-table>
                 </v-card>
             </v-col>
         </v-row>
@@ -187,6 +250,11 @@ const message = [
 
 .v-list-item:hover,
 .v-list-item .v-list-item--active {
+    color: var(--white);
+    background-color: var(--primary);
+}
+
+.active {
     color: var(--white);
     background-color: var(--primary);
 }
