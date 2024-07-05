@@ -12,6 +12,9 @@ const queryKeys = {
     newsTypes: {
         GET_ALL: "GET_ALL_NEWS_TYPES",
     },
+    about: {
+        GET: "GET_ABOUT",
+    },
 };
 
 export default queryKeys;
