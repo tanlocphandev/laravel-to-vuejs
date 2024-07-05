@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\TheLoai;
 use App\Filters\V1\CategoryFilter;
+use App\Http\Requests\V1\ChangeDisplayCategoryRequest;
+use App\Http\Requests\V1\SortPriorityCategoryRequest;
 use App\Http\Requests\V1\StoreCategoryRequest;
 use App\Response\Exception\NotFoundException;
 use App\Response\OkResponse;
@@ -35,7 +37,7 @@ class CategoryController extends Controller
             $data = $data->with('tintuc');
         }
 
-        $data = $data->paginate($request->query('limit', 10))->appends($request->query());
+        $data = $data->orderBy($request->query('sort', 'id'), $request->query('order', 'desc'))->paginate($request->query('limit', 10))->appends($request->query());
 
         $result = $data->items();
 
@@ -139,6 +141,49 @@ class CategoryController extends Controller
         }
 
         $response = new OkResponse("Xóa thể loại thành công", $deleted);
+
+        return $response->send();
+    }
+
+    public function sortPriority(SortPriorityCategoryRequest $request)
+    {
+        $data = $request->all();
+
+        $foundCategoryCurrent = TheLoai::where('id', '=', $data['currentId'])->first();
+        $foundCategoryMoved = TheLoai::where('id', '=', $data['moveId'])->first();
+
+        if (!$foundCategoryCurrent && !$foundCategoryMoved) {
+            return (new NotFoundException('Không tìm thấy thể loại để sắp xếp!'))->sendError();
+        }
+
+        $priorityMoved = $foundCategoryCurrent->uutien;
+
+        $foundCategoryCurrent->uutien = $foundCategoryMoved->uutien;
+        $foundCategoryMoved->uutien = $priorityMoved;
+
+        $foundCategoryCurrent->save();
+        $foundCategoryMoved->save();
+
+        $response = new OkResponse("Sắp xếp vị trí ưu tiên thành công.", []);
+
+        return $response->send();
+    }
+
+    public function changeDisplay(ChangeDisplayCategoryRequest $request)
+    {
+        $data = $request->all();
+
+        $updatedHiddenIds = TheLoai::whereIn('id', $data['hiddenIds'])
+            ->update(['hienthi' => 0]);
+
+        $updatedDisplayIds = TheLoai::whereIn('id', $data['displayIds'])
+            ->update(['hienthi' => 1]);
+
+        if (!$updatedHiddenIds || !$updatedDisplayIds) {
+            return (new NotFoundException('Không thay đổi hiện thị!'))->sendError();
+        }
+
+        $response = new OkResponse("Thay đổi hiển thị thành công", []);
 
         return $response->send();
     }

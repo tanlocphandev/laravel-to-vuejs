@@ -26,6 +26,10 @@ Route::prefix('v1')->middleware('cors')->group(function () {
 
     Route::apiResource('users', UserController::class);
     Route::apiResource('categories', CategoryController::class);
+
+    Route::post('categories/sort/priority', [CategoryController::class, 'sortPriority']);
+    Route::post('categories/change/display', [CategoryController::class, 'changeDisplay']);
+
     Route::apiResource('news-types', NewsTypesController::class);
     Route::apiResource('mailbox', MailboxController::class);
     Route::apiResource('news', NewsController::class);
