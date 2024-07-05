@@ -37,7 +37,29 @@ class CategoryController extends Controller
             $data = $data->with('tintuc');
         }
 
-        $data = $data->orderBy($request->query('sort', 'id'), $request->query('order', 'desc'))->paginate($request->query('limit', 10))->appends($request->query());
+        $data = $data->orderBy($request->query('sort', 'id'), $request->query('order', 'desc'));
+
+        if ($request->query('all', 0) == 1) {
+            $data = $data->get();
+
+            $result = $data->toArray();
+
+            foreach ($result as $key => $value) {
+                if (isset($value->tintuc)) {
+                    foreach ($value->tintuc as $index => $news) {
+                        if (isset($news->hinhdaidien)) {
+                            $result[$key]->tintuc[$index]->hinhdaidien = url("assets/user/images/hinhtintuc/" . $news->hinhdaidien);
+                        }
+                    }
+                }
+            }
+
+            $response = new OkResponse("Get all category successfully", $result);
+
+            return $response->send();
+        } else {
+            $data = $data->paginate($request->query('limit', 10))->appends($request->query());
+        }
 
         $result = $data->items();
 

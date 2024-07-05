@@ -50,6 +50,14 @@ class NewsTypesController extends Controller
      */
     public function store(NewsTypesRequest $request)
     {
+        $found = LoaiTin::where('tenloaitin', 'like', '%' . $request->input('tenloaitin') . '%')
+            ->where('id_theloai', '=', $request->input('id_theloai'))
+            ->first();
+
+        if ($found) {
+            return (new NotFoundException('Tên loại tin đã tồn tại'))->sendError();
+        }
+
         $added = LoaiTin::create($request->all());
 
         if (!$added) {
