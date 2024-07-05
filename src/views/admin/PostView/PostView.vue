@@ -4,12 +4,12 @@ import MainTop from "@/components/shared/admin/MainTop";
 import Search from "@/components/ui/Search";
 import { useGetNews } from "@/hooks/news.hook";
 import { computed, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const isChecked = ref(false);
 
+const router = useRouter();
 const route = useRoute();
-
 const page = computed(() => parseInt(route.query?.page) || 1);
 
 const options = computed(() => {
@@ -22,14 +22,31 @@ const options = computed(() => {
 const { data, isLoading } = useGetNews(options.value);
 
 const headers = [
-    { title: "ID", align: "start", key: "id" },
-    { title: "Tiêu đề", align: "start", key: "tieude" },
-    { title: "Mô tả", align: "start", key: "mota" },
+    { title: "ID", align: "start", key: "id", maxWidth: 50 },
+    {
+        title: "Tiêu đề",
+        align: "start",
+        key: "tieude",
+        maxWidth: 200,
+    },
+    {
+        title: "Mô tả",
+        align: "start",
+        key: "mota",
+        maxWidth: 200,
+    },
     { title: "Hình ảnh", align: "start", key: "hinhdaidien", sortable: false },
     { title: "Nổi bật", align: "start", key: "noibat", sortable: false },
     { title: "Lượt xem", align: "start", key: "luotxem" },
     { title: "Action", key: "actions", sortable: false },
 ];
+
+const onchangePage = (currentPage) => {
+    router.push({
+        path: route.path,
+        query: { ...route.query, page: currentPage },
+    });
+};
 </script>
 
 <template>
@@ -53,15 +70,18 @@ const headers = [
                 prepend-icon="mdi-plus-circle-outline"
                 class="action-icon-btn"
                 @click="addNew"
-                >Thêm mới</v-btn
             >
+                Thêm mới
+            </v-btn>
         </div>
 
         <v-data-table
             :headers="headers"
             :items="data?.metadata"
             :loading="isLoading"
+            :hide-default-footer="true"
             item-key="name"
+            hover
         >
             <template v-slot:loading>
                 <v-skeleton-loader type="table-row@5"></v-skeleton-loader>
@@ -99,46 +119,16 @@ const headers = [
                     mdi-delete
                 </v-icon>
             </template>
-
-            <!-- <tbody>
-                <tr v-for="(item, index) in posts" :key="index">
-                    <td>{{ item.id }}</td>
-                    <td>{{ item.title }}</td>
-                    <td>
-                        <div class="post-des">
-                            <p>{{ item.des }}</p>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="post-img">
-                            <v-img :src="item.img"> </v-img>
-                        </div>
-                    </td>
-                    <td>
-                        <div>
-                            <v-checkbox v-model="isChecked">{{
-                                isChecked ? "Mở" : "Tắt"
-                            }}</v-checkbox>
-                        </div>
-                    </td>
-                    <td>{{ item.view }}</td>
-                    <td class="action-btn">
-                        <v-btn class="action-icon-btn mb-2" color="success">
-                            <v-icon class="mr-2">mdi-eye</v-icon>
-                            Xem
-                        </v-btn>
-                        <v-btn class="action-icon-btn mb-2" color="primary">
-                            <v-icon class="mr-2">mdi-pencil-outline</v-icon>
-                            Sửa
-                        </v-btn>
-                        <v-btn class="action-icon-btn">
-                            <v-icon class="mr-2">mdi-delete-outline</v-icon>
-                            Xóa
-                        </v-btn>
-                    </td>
-                </tr>
-            </tbody> -->
         </v-data-table>
+
+        <v-pagination
+            size="small"
+            class="mt-4"
+            :length="data?.options?.total_pages"
+            v-model="page"
+            @update:modelValue="onchangePage"
+            :total-visible="5"
+        ></v-pagination>
     </v-card>
 </template>
 
@@ -163,6 +153,7 @@ thead.table-header {
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 20px;
+    line-clamp: 5;
     -webkit-line-clamp: 5;
     height: 100px;
     display: -webkit-box;

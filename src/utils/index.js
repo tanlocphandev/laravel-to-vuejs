@@ -23,7 +23,7 @@ export const fDate = (date, format = "DD MMMM YYYY") => {
 
 export const paramsToArrString = (params = {}) => {
     return Object.entries(params).map(([key, value]) => {
-        return `${mapParamsToValues(value)}`;
+        return mapParamsToValues(value);
     });
 };
 
@@ -51,4 +51,8 @@ export const fToNow = (date) => {
 
 export const sortByCreatedAt = (array = []) => {
     return array.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+};
+
+export const getQueryKeys = (params = {}) => {
+    return paramsToArrString(params);
 };

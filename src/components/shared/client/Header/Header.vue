@@ -3,7 +3,7 @@ import { getCurrentTime } from "@/utils";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import Avatar from "@/components/ui/Avatar";
 import { ROUTE_PATHS } from "@/constants/route.constant";
-import useCategory from "@/hooks/useCategory";
+import useGetCategory from "@/hooks/category.hook";
 import { computed } from "vue";
 
 const categories = [
@@ -31,18 +31,30 @@ const categories = [
     },
 ];
 
-const { data } = useCategory({ include_category: "true", include_news: "true" });
+const { data } = useGetCategory({
+    include_category: "true",
+    include_news: "true",
+    order: "asc",
+    sort: "uutien",
+});
 
 const categoriesComputed = computed(() => {
-    const _category = data.value?.metadata?.map((t) => {
-        return {
-            name: t.tentheloai,
-            to: t.loaitin.length ? "#" : ROUTE_PATHS.Home,
-            ...(t.loaitin.length
-                ? { children: t.loaitin.map((c) => ({ name: c.tenloaitin, to: ROUTE_PATHS.News })) }
-                : {}),
-        };
-    });
+    const _category = data.value?.metadata
+        ?.filter((t) => t?.hienthi)
+        ?.map((t) => {
+            return {
+                name: t.tentheloai,
+                to: t.loaitin.length ? "#" : ROUTE_PATHS.Home,
+                ...(t.loaitin.length
+                    ? {
+                          children: t.loaitin.map((c) => ({
+                              name: c.tenloaitin,
+                              to: ROUTE_PATHS.News,
+                          })),
+                      }
+                    : {}),
+            };
+        });
 
     if (!_category) return categories;
 
@@ -71,7 +83,11 @@ onBeforeUnmount(() => {
     <v-container class="pa-0 w-1200">
         <div class="header-container">
             <Avatar class="header-avatar" />
-            <v-img cover="cover" src="/assets/header-bg.jpg" class="header-image"></v-img>
+            <v-img
+                cover="cover"
+                src="/assets/header-bg.jpg"
+                class="header-image"
+            ></v-img>
         </div>
 
         <div class="nav-bar-container">
@@ -79,19 +95,38 @@ onBeforeUnmount(() => {
                 <v-icon class="home-icon">mdi-home</v-icon>
             </router-link>
 
-            <v-menu open-on-hover v-for="category in categoriesComputed" :key="category._id" link>
+            <v-menu
+                open-on-hover
+                v-for="category in categoriesComputed"
+                :key="category._id"
+                link
+            >
                 <template v-slot:activator="{ props }">
-                    <router-link v-bind="props" :to="category.to" class="nav-button">
+                    <router-link
+                        v-bind="props"
+                        :to="category.to"
+                        class="nav-button"
+                    >
                         <v-list-item-title class="text-capitalize">
                             {{ category.name }}
                         </v-list-item-title>
                     </router-link>
                 </template>
 
-                <v-list v-if="category?.children && category?.children?.length > 0" class="list-cate">
-                    <v-list-item v-for="sub in category.children" :key="sub._id" link class="list-sub">
+                <v-list
+                    v-if="category?.children && category?.children?.length > 0"
+                    class="list-cate"
+                >
+                    <v-list-item
+                        v-for="sub in category.children"
+                        :key="sub._id"
+                        link
+                        class="list-sub"
+                    >
                         <router-link :to="sub.to" class="sub-button">
-                            <v-list-item-title> {{ sub.name }} </v-list-item-title>
+                            <v-list-item-title>
+                                {{ sub.name }}
+                            </v-list-item-title>
                         </router-link>
                     </v-list-item>
                 </v-list>
@@ -102,7 +137,11 @@ onBeforeUnmount(() => {
             <div>{{ currentTime }}</div>
             <div>
                 <div class="search-field">
-                    <input type="text" class="search-text" placeholder="Tìm kiếm..." />
+                    <input
+                        type="text"
+                        class="search-text"
+                        placeholder="Tìm kiếm..."
+                    />
                     <v-icon class="search-icon">mdi-magnify</v-icon>
                 </div>
             </div>
@@ -166,7 +205,10 @@ onBeforeUnmount(() => {
 }
 
 .nav-button:hover {
-    background-image: linear-gradient(rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 100%);
+    background-image: linear-gradient(
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.2) 100%
+    );
 }
 
 .header-bottom {

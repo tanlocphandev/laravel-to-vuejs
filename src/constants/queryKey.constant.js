@@ -9,6 +9,9 @@ const queryKeys = {
     comment: {
         GET_BY_NEWS: "GET_ALL_COMMENT_BY_NEWS",
     },
+    newsTypes: {
+        GET_ALL: "GET_ALL_NEWS_TYPES",
+    },
 };
 
 export default queryKeys;

@@ -4,9 +4,14 @@ import NavLeft from "@/components/shared/client/NavLeft";
 import NavRight from "@/components/shared/client/NavRight";
 import Footer from "@/components/shared/client/Footer";
 import Mailbox from "@/components/shared/client/Mailbox";
-import useCategory from "@/hooks/useCategory";
+import useGetCategory from "@/hooks/category.hook";
 
-const { data } = useCategory({ include_category: "true", include_news: "true" });
+useGetCategory({
+    include_category: "true",
+    include_news: "true",
+    order: "asc",
+    sort: "uutien",
+});
 </script>
 
 <template>

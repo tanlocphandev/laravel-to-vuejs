@@ -1,17 +1,22 @@
 <script setup>
 import PostCard from "@/components/shared/client/PostCard/PostCard.vue";
 import CardItem from "@/components/shared/client/CardItem/CardItem.vue";
-import useCategory from "@/hooks/useCategory";
+import useGetCategory from "@/hooks/category.hook";
 import { fDate } from "@/utils";
 
-const { data } = useCategory({ include_category: "true", include_news: "true" });
+const { data } = useGetCategory({
+    include_category: "true",
+    include_news: "true",
+    order: "asc",
+    sort: "uutien",
+});
 </script>
 
 <template>
     <PostCard />
 
     <CardItem
-        v-for="cardItem in data?.metadata"
+        v-for="cardItem in data?.metadata?.filter((t) => t?.hienthi)"
         :key="cardItem.id"
         :links="cardItems1"
         :titleMain="cardItem.tentheloai"
@@ -19,7 +24,9 @@ const { data } = useCategory({ include_category: "true", include_news: "true" })
         :description="cardItem?.tintuc[0]?.mota"
         :title="cardItem?.tintuc[0]?.tieude"
         :imageUrl="cardItem?.tintuc[0]?.hinhdaidien"
-        :datetime="fDate(cardItem?.tintuc[0]?.created_at, 'DD/MM/YYYY HH:mm:ss')"
+        :datetime="
+            fDate(cardItem?.tintuc[0]?.created_at, 'DD/MM/YYYY HH:mm:ss')
+        "
         :id="cardItem?.tintuc[0]?.id"
         views="5"
         comments="0"
