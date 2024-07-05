@@ -11,11 +11,11 @@ const { data, isLoading } = useGetAbout();
             v-if="isLoading"
         />
 
-        <div
+        <figure
             v-else
             class="about-content"
             v-html="data?.metadata?.gioithieu"
-        ></div>
+        ></figure>
     </div>
 </template>
 

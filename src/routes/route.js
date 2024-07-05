@@ -24,6 +24,7 @@ const AdminAboutView = () => import("@/views/admin/AboutView");
 const AdminDisplayView = () => import("@/views/admin/DisplayView");
 const AdminCategoryView = () => import("@/views/admin/CategoryView");
 const AdminPostView = () => import("@/views/admin/PostView");
+const AddEditPost = () => import("@/views/admin/PostView/AddEditPost.vue");
 const AdminAccountView = () => import("@/views/admin/AccountView");
 const AdminMessageView = () => import("@/views/admin/MessageView");
 const AddEditCategory = () => import("@/views/admin/CategoryView/AddEditCategory.vue");
@@ -131,9 +132,30 @@ const routes = [
             },
             {
                 path: ROUTE_PATHS.AdminPost(),
-                component: AdminPostView,
-                meta: { title: "Bài viết" },
-                sensitive: true,
+                component: RouterView,
+                children: [
+                    {
+                        path: "",
+                        component: AdminPostView,
+                        name: "post",
+                        meta: { title: "Bài viết" },
+                        sensitive: true,
+                    },
+                    {
+                        path: "add",
+                        component: AddEditPost,
+                        name: "post_create",
+                        meta: { title: "Thêm bài viết" },
+                        sensitive: true,
+                    },
+                    {
+                        path: "edit/:id",
+                        component: AddEditPost,
+                        name: "post_edit",
+                        meta: { title: "Sửa bài viết" },
+                        sensitive: true,
+                    },
+                ],
             },
             {
                 path: ROUTE_PATHS.AdminAccount(),

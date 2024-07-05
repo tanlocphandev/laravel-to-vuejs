@@ -74,13 +74,14 @@ export const useMutationDeleteNewsTypes = () => {
     });
 };
 
-export const useGetNewsTypes = (params = {}) => {
+export const useGetNewsTypes = (params = {}, enabled = true) => {
     const options = computed(() => {
         return {
             queryKey: getQueryKeys({ key: queryKeys.newsTypes.GET_ALL, ...params }),
             queryFn: () => newsTypesService.get(params),
             staleTime: 5 * 1000,
             keepPreviousData: true,
+            enabled,
         };
     });
 

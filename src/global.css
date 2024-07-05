@@ -20,7 +20,7 @@ i.mdi-checkbox-blank-circle-outline.mdi.v-icon.notranslate.v-theme--light.v-icon
 }
 
 .color-primary {
-    color: var(--primary)
+    color: var(--primary);
 }
 
 .padding-0 {
@@ -62,7 +62,6 @@ i.mdi-checkbox-blank-circle-outline.mdi.v-icon.notranslate.v-theme--light.v-icon
 
 /* end */
 
-
 /* btn */
 .action-icon-btn {
     background-color: var(--primary);
@@ -76,3 +75,7 @@ span.v-btn__prepend {
 }
 
 /* end */
+
+figure.image img {
+    width: 100%;
+}

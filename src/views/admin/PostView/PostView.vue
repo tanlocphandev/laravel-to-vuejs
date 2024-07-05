@@ -2,24 +2,59 @@
 <script setup>
 import MainTop from "@/components/shared/admin/MainTop";
 import Search from "@/components/ui/Search";
-import { useGetNews } from "@/hooks/news.hook";
-import { computed, ref } from "vue";
+import {
+    queryKeysGetAllNews,
+    useGetNews,
+    useMutationEditPost,
+} from "@/hooks/news.hook";
+import { useQueryClient } from "@tanstack/vue-query";
+import { computed, ref, watch, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { toast } from "vue-sonner";
 
 const isChecked = ref(false);
 
 const router = useRouter();
 const route = useRoute();
 const page = computed(() => parseInt(route.query?.page) || 1);
+const mutationEdit = useMutationEditPost();
+const popular = ref(null);
+const queryClient = useQueryClient();
+const searQuery = computed(() => {
+    return route.query?.q || "";
+});
+
+const isSearching = computed(() => {
+    return searQuery.value.length > 0;
+});
 
 const options = computed(() => {
     return {
         page,
         limit: 10,
+        ...(isSearching
+            ? {
+                  "noidung[like]": searQuery,
+              }
+            : {}),
     };
 });
 
 const { data, isLoading } = useGetNews(options.value);
+
+watchEffect(() => {
+    if (data.value?.metadata) {
+        const { metadata } = data.value;
+
+        const _popular = {};
+
+        metadata.forEach((item) => {
+            _popular[item.id] = Boolean(item.noibat);
+        });
+
+        popular.value = _popular;
+    }
+});
 
 const headers = [
     { title: "ID", align: "start", key: "id", maxWidth: 50 },
@@ -36,7 +71,12 @@ const headers = [
         maxWidth: 200,
     },
     { title: "Hình ảnh", align: "start", key: "hinhdaidien", sortable: false },
-    { title: "Nổi bật", align: "start", key: "noibat", sortable: false },
+    {
+        title: "Nổi bật",
+        align: "start",
+        key: "noibat",
+        sortable: false,
+    },
     { title: "Lượt xem", align: "start", key: "luotxem" },
     { title: "Action", key: "actions", sortable: false },
 ];
@@ -45,6 +85,28 @@ const onchangePage = (currentPage) => {
     router.push({
         path: route.path,
         query: { ...route.query, page: currentPage },
+    });
+};
+
+const handleChangeValue = (item) => {
+    const newPopular = !item.noibat;
+
+    const updated = {
+        id: item.id,
+        noibat: newPopular,
+    };
+
+    mutationEdit.mutate(updated, {
+        onSuccess: () => {
+            popular.value[item.id] = newPopular;
+
+            toast.success("Đã thay đổi nổi bật thành công.");
+
+            queryClient.invalidateQueries({
+                queryKey: queryKeysGetAllNews(options.value),
+                exact: true,
+            });
+        },
     });
 };
 </script>
@@ -60,19 +122,25 @@ const onchangePage = (currentPage) => {
     <v-card class="mx-30 pa-30">
         <div class="d-flex justify-space-between mb-5">
             <Search
-                placeholder="Tìm kiếm tên tài khoản..."
+                placeholder="Tìm kiếm bài viết..."
                 width="300px"
                 height="45px"
                 widthIcon="54px"
             />
-            <v-btn
-                color="success"
-                prepend-icon="mdi-plus-circle-outline"
-                class="action-icon-btn"
-                @click="addNew"
+
+            <router-link
+                class="text-decoration-none text-white"
+                :to="{ name: 'post_create' }"
             >
-                Thêm mới
-            </v-btn>
+                <v-btn
+                    color="success"
+                    prepend-icon="mdi-plus-circle-outline"
+                    class="action-icon-btn"
+                    @click="addNew"
+                >
+                    Thêm mới
+                </v-btn>
+            </router-link>
         </div>
 
         <v-data-table
@@ -88,9 +156,7 @@ const onchangePage = (currentPage) => {
             </template>
 
             <template v-slot:item.hinhdaidien="{ value }">
-                <div class="post-img">
-                    <v-img :src="value"> </v-img>
-                </div>
+                <v-img :src="value"> </v-img>
             </template>
 
             <template v-slot:item.mota="{ value }">
@@ -105,19 +171,31 @@ const onchangePage = (currentPage) => {
                 </div>
             </template>
 
-            <template v-slot:item.actions="{ item }">
-                <v-icon
-                    class="me-2"
-                    size="small"
-                    color="green"
-                    @click="editItem(item)"
-                >
-                    mdi-pencil
-                </v-icon>
+            <template v-slot:item.noibat="{ item }">
+                <v-switch
+                    :loading="mutationEdit.isPending.value"
+                    :disabled="mutationEdit.isPending.value"
+                    v-model="popular[item.id]"
+                    inset
+                    @update:modelValue="handleChangeValue(item)"
+                    indeterminate
+                    color="primary"
+                ></v-switch>
+            </template>
 
-                <v-icon size="small" color="red" @click="deleteItem(item)">
-                    mdi-delete
-                </v-icon>
+            <template v-slot:item.actions="{ item }">
+                <router-link
+                    :to="{ name: 'post_edit', params: { id: item.id } }"
+                >
+                    <v-icon
+                        class="me-2"
+                        size="small"
+                        color="green"
+                        @click="editItem(item)"
+                    >
+                        mdi-pencil
+                    </v-icon>
+                </router-link>
             </template>
         </v-data-table>
 

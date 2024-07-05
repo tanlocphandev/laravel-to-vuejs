@@ -1,22 +1,24 @@
 import queryKeys from "@/constants/queryKey.constant";
 import newsService from "@/services/news.service";
-import { paramsToArrString } from "@/utils";
-import { useQuery } from "@tanstack/vue-query";
+import { getQueryKeys, paramsToArrString } from "@/utils";
+import { useMutation, useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
+import { toast } from "vue-sonner";
 
 export const queryKeysGetNewsDetails = (newId, params = {}) => {
     return [queryKeys.news.DETAILS, newId.value, ...paramsToArrString(params)];
 };
 
-export const queryKeysGetAllNews = ({ page, limit = 10, ...others }) => {
-    return [queryKeys.news.GET_ALL, page.value, limit, ...paramsToArrString(others)];
+export const queryKeysGetAllNews = (params) => {
+    return getQueryKeys({ key: queryKeys.news.GET_ALL, ...params });
 };
 
-export const useGetNewsDetails = (newId, params = {}) => {
+export const useGetNewsDetails = (newId, params = {}, enabled = true) => {
     const options = computed(() => {
         return {
             queryKey: queryKeysGetNewsDetails(newId, params),
             queryFn: () => newsService.getById(newId, params),
+            enabled,
         };
     });
 
@@ -26,12 +28,10 @@ export const useGetNewsDetails = (newId, params = {}) => {
 };
 
 export const useGetNews = (params = {}) => {
-    const { page, limit = 3, ...others } = params;
-
     const options = computed(() => {
         return {
-            queryKey: queryKeysGetAllNews({ page, limit, ...others }),
-            queryFn: () => newsService.get({ page, limit, ...others }),
+            queryKey: queryKeysGetAllNews(params),
+            queryFn: () => newsService.get(params),
             staleTime: 5 * 1000,
             keepPreviousData: true,
         };
@@ -40,4 +40,32 @@ export const useGetNews = (params = {}) => {
     const { isLoading, data, isPlaceholderData } = useQuery(options);
 
     return { isLoading, data, isPlaceholderData };
+};
+
+export const useMutationAddPost = () => {
+    return useMutation({
+        mutationFn: (data) => {
+            return newsService.post(data);
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        },
+        onSuccess: () => {
+            toast.success("Thêm bài viết thành công");
+        },
+    });
+};
+
+export const useMutationEditPost = () => {
+    return useMutation({
+        mutationFn: (data) => {
+            return newsService.put(data.id, data);
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        },
+        onSuccess: () => {
+            toast.success("Cập nhật bài viết thành công.");
+        },
+    });
 };

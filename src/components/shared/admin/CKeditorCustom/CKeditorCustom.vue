@@ -3,6 +3,7 @@ import uploadService from "@/services/upload.service";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import CKEditor from "@ckeditor/ckeditor5-vue";
 import { ref, watch } from "vue";
+// import { Image, ImageResize } from "ckeditor5";
 
 export default {
     name: "CKEditor",
@@ -71,6 +72,14 @@ export default {
             editorData,
             editorConfig: {
                 extraPlugins: [uploader],
+                // plugins: [Image, ImageResize],
+                image: {
+                    toolbar: [
+                        "toggleImageCaption",
+                        "imageTextAlternative",
+                        "ckboxImageEdit",
+                    ],
+                },
             },
         };
     },
@@ -79,11 +88,9 @@ export default {
 
 
 <template>
-    <div class="mx-5">
-        <ckeditor
-            :editor="editor"
-            v-model="editorData"
-            :config="editorConfig"
-        ></ckeditor>
-    </div>
+    <ckeditor
+        :editor="editor"
+        v-model="editorData"
+        :config="editorConfig"
+    ></ckeditor>
 </template>
