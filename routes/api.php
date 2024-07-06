@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\FacultyController;
 use App\Http\Controllers\Api\V1\MailboxController;
 use App\Http\Controllers\Api\V1\NewsController;
 use App\Http\Controllers\Api\V1\NewsTypesController;
+use App\Http\Controllers\Api\V1\PersonnelController;
 use App\Http\Controllers\Api\V1\UploadController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,7 @@ Route::prefix('v1')->middleware('cors')->group(function () {
     Route::apiResource('about', AboutController::class);
     Route::apiResource('faculty', FacultyController::class);
     Route::apiResource('department', DepartmentController::class);
+    Route::apiResource('personnel', PersonnelController::class);
     Route::apiResource('news-types', NewsTypesController::class);
     Route::get('mailbox/get/count', [MailboxController::class, 'getCount']);
     Route::apiResource('mailbox', MailboxController::class);

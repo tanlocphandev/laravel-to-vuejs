@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Filters\V1\FacultyFilter;
+use App\Filters\V1\PersonnelFilter;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\V1\StoreFacultyRequest;
-use App\Model\Faculty;
+use App\Http\Requests\V1\StorePersonnelRequest;
+use App\Model\Personnel;
 use App\Response\Exception\NotFoundException;
 use App\Response\OkResponse;
 
-class FacultyController extends Controller
+class PersonnelController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,21 +19,21 @@ class FacultyController extends Controller
      */
     public function index(Request $request)
     {
-        $filter = new FacultyFilter();
+        $filter = new PersonnelFilter();
 
         $filterItems = $filter->transform($request);
 
         $includeDepartment = $request->query('include_department', 'false');
-        $includePersonnel = $request->query('include_personnel', 'false');
+        $includeFaculty = $request->query('include_faculty', 'false');
 
-        $data = Faculty::where($filterItems);
+        $data = Personnel::where($filterItems);
 
         if ($includeDepartment == 'true') {
-            $data->with('departments');
+            $data->with('department');
         }
 
-        if ($includePersonnel == 'true') {
-            $data->with('departments.personnel');
+        if ($includeFaculty == 'true') {
+            $data->with('department.faculty');
         }
 
         if ($request->query('all', 0) == 1) {
@@ -41,12 +41,12 @@ class FacultyController extends Controller
 
             $result = $data->toArray();
 
-            return (new OkResponse("Lấy danh sách khoa thành công.", $result))->send();
+            return (new OkResponse("Lấy danh sách nhân sự thành công.", $result))->send();
         }
 
         $data = $data->orderBy($request->query('sort', 'id'), $request->query('order', 'asc'))->paginate($request->query('limit', 10))->appends($request->query());
 
-        $response = new OkResponse("Lấy danh sách khoa thành công.", $data->items());
+        $response = new OkResponse("Lấy danh sách nhân sự thành công.", $data->items());
 
         return $response->pagination($data)->send();
     }
@@ -54,18 +54,18 @@ class FacultyController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  StoreFacultyRequest  $request
+     * @param  StorePersonnelRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreFacultyRequest $request)
+    public function store(StorePersonnelRequest $request)
     {
-        $added = Faculty::create($request->all());
+        $added = Personnel::create($request->all());
 
         if (!$added) {
-            return (new NotFoundException('Lỗi khi thêm khoa.'))->sendError();
+            return (new NotFoundException('Lỗi khi thêm nhân sự.'))->sendError();
         }
 
-        $response = new OkResponse("Thêm khoa thành công.", $added->toArray());
+        $response = new OkResponse("Thêm nhân sự thành công.", $added->toArray());
 
         return $response->send();
     }
@@ -78,21 +78,26 @@ class FacultyController extends Controller
      */
     public function show($id)
     {
-        $data = Faculty::where('id', '=', $id);
+        $data = Personnel::where('id', '=', $id);
 
         $includeDepartment = request()->query('include_department', 'false');
+        $includeFaculty = request()->query('include_faculty', 'false');
 
-        if ($includeDepartment) {
-            $data->with('departments');
+        if ($includeDepartment == 'true') {
+            $data->with('department');
+        }
+
+        if ($includeFaculty == 'true') {
+            $data->with('department.faculty');
         }
 
         $data = $data->first();
 
         if (!$data) {
-            return (new NotFoundException('Không tìm khoa theo id ' . $id))->sendError();
+            return (new NotFoundException('Không tìm nhân sự theo id ' . $id))->sendError();
         }
 
-        $response = new OkResponse('Lấy khoa theo id ' . $id . 'Thành  công', $data);
+        $response = new OkResponse('Lấy nhân sự theo id ' . $id . 'Thành công', $data);
 
         return $response->send();
     }
@@ -106,13 +111,13 @@ class FacultyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $updated = Faculty::where('id', '=', $id)->update($request->all());
+        $updated = Personnel::where('id', '=', $id)->update($request->all());
 
         if (!$updated) {
-            return (new NotFoundException('Lỗi khi cập nhật khoa.'))->sendError();
+            return (new NotFoundException('Lỗi khi cập nhật nhân sự.'))->sendError();
         }
 
-        $response = new OkResponse("Cập nhật khoa thành công.", $updated);
+        $response = new OkResponse("Cập nhật nhân sự thành công.", $updated);
 
         return $response->send();
     }
@@ -125,13 +130,13 @@ class FacultyController extends Controller
      */
     public function destroy($id)
     {
-        $deleted = Faculty::where('id', '=', $id)->delete();
+        $deleted = Personnel::where('id', '=', $id)->delete();
 
         if (!$deleted) {
-            return (new NotFoundException('Không tìm thấy khoa để xóa!'))->sendError();
+            return (new NotFoundException('Không tìm thấy nhân sự để xóa!'))->sendError();
         }
 
-        $response = new OkResponse("Xóa khoa thành công", $deleted);
+        $response = new OkResponse("Xóa nhân sự thành công", $deleted);
 
         return $response->send();
     }
