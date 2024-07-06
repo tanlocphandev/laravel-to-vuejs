@@ -12,4 +12,7 @@ export const ROUTE_PATHS = {
     AdminDisplay: (isRedirect) => (!isRedirect ? "display" : "/admin/display"),
     AdminAccount: (isRedirect) => (!isRedirect ? "account" : "/admin/account"),
     AdminMessage: (isRedirect) => (!isRedirect ? "message" : "/admin/message"),
+    AdminDepartment: (isRedirect) => (!isRedirect ? "department" : "/admin/department"),
+    AdminPersonnel: (isRedirect) => (!isRedirect ? "personnel" : "/admin/personnel"),
+    AdminFaculty: (isRedirect) => (!isRedirect ? "faculty" : "/admin/faculty"),
 };

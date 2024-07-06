@@ -9,6 +9,7 @@ const links = [
     ["mdi-account", "Tài khoản", ROUTE_PATHS.AdminAccount(true)],
     ["mdi-email", "Hộp thư", ROUTE_PATHS.AdminMessage(true)],
 ];
+
 const home = [
     [
         "mdi-checkbox-blank-circle-outline",
@@ -21,6 +22,7 @@ const home = [
         ROUTE_PATHS.AdminDisplay(true),
     ],
 ];
+
 const news = [
     [
         "mdi-checkbox-blank-circle-outline",
@@ -31,6 +33,24 @@ const news = [
         "mdi-checkbox-blank-circle-outline",
         "Bài viết",
         ROUTE_PATHS.AdminPost(true),
+    ],
+];
+
+const personals = [
+    [
+        "mdi-checkbox-blank-circle-outline",
+        "Khoa",
+        ROUTE_PATHS.AdminFaculty(true),
+    ],
+    [
+        "mdi-checkbox-blank-circle-outline",
+        "Bộ môn",
+        ROUTE_PATHS.AdminDepartment(true),
+    ],
+    [
+        "mdi-checkbox-blank-circle-outline",
+        "Nhân sự",
+        ROUTE_PATHS.AdminPersonnel(true),
     ],
 ];
 </script>
@@ -105,6 +125,29 @@ const news = [
                 <v-list-item
                     class="fs-14"
                     v-for="([icon, title, to], i) in news"
+                    :key="i"
+                    :value="title"
+                    :to="to"
+                    :prepend-icon="icon"
+                    :title="title"
+                >
+                </v-list-item>
+            </v-list-group>
+
+            <v-list-group value="personals">
+                <template v-slot:activator="{ props }">
+                    <v-list-item
+                        v-bind="props"
+                        prepend-icon="mdi-account-group"
+                        title="Nhân sự"
+                        value="Nhân sự"
+                    >
+                    </v-list-item>
+                </template>
+
+                <v-list-item
+                    class="fs-14"
+                    v-for="([icon, title, to], i) in personals"
                     :key="i"
                     :value="title"
                     :to="to"

@@ -170,121 +170,119 @@ const reset = () => {
     />
 
     <v-card class="mx-30 pa-30 cate-card">
-        <v-form v-model="valid">
-            <v-container>
-                <v-form @submit="submit" ref="form" v-model="valid">
-                    <v-card>
-                        <v-card-title>
-                            <h3>{{ $route.meta.title }}</h3>
-                        </v-card-title>
+        <v-container>
+            <v-form @submit="submit" ref="form" v-model="valid">
+                <v-card>
+                    <v-card-title>
+                        <h3>{{ $route.meta.title }}</h3>
+                    </v-card-title>
 
-                        <v-card-text>
-                            <small class="text--secondary">
-                                Loại tin mới không hợp lệ nếu đã tồn tại một
-                                loại tin giống nó.
-                            </small>
+                    <v-card-text>
+                        <small class="text--secondary">
+                            Loại tin mới không hợp lệ nếu đã tồn tại một loại
+                            tin giống nó.
+                        </small>
 
-                            <v-select
-                                :loading="isLoading"
-                                v-model="category"
-                                :items="categories?.metadata"
-                                item-title="tentheloai"
-                                item-value="id"
-                                label="Thuộc thể loại"
-                                :rules="[rules.required]"
-                                required
-                            ></v-select>
+                        <v-select
+                            :loading="isLoading"
+                            v-model="category"
+                            :items="categories?.metadata"
+                            item-title="tentheloai"
+                            item-value="id"
+                            label="Thuộc thể loại"
+                            :rules="[rules.required]"
+                            required
+                        ></v-select>
 
-                            <v-select
-                                :loading="isLoadingNewsTypes"
-                                v-model="newsType"
-                                :items="newsTypesOptions?.metadata"
-                                item-title="tenloaitin"
-                                item-value="id"
-                                label="Loại tin tức"
-                                :rules="[rules.required]"
-                                required
-                            ></v-select>
+                        <v-select
+                            :loading="isLoadingNewsTypes"
+                            v-model="newsType"
+                            :items="newsTypesOptions?.metadata"
+                            item-title="tenloaitin"
+                            item-value="id"
+                            label="Loại tin tức"
+                            :rules="[rules.required]"
+                            required
+                        ></v-select>
 
-                            <v-text-field
-                                v-model="title"
-                                :rules="[rules.required]"
-                                label="Tiêu đề"
-                                placeholder="Nhập tên tiêu đề tức"
-                                required
-                            ></v-text-field>
+                        <v-text-field
+                            v-model="title"
+                            :rules="[rules.required]"
+                            label="Tiêu đề"
+                            placeholder="Nhập tên tiêu đề tức"
+                            required
+                        ></v-text-field>
 
-                            <v-textarea
-                                v-model="description"
-                                label="Viết mô tả ngắn..."
-                                auto-grow
-                                outlined
-                                rows="3"
-                                :rules="[rules.required]"
-                                required
-                            ></v-textarea>
+                        <v-textarea
+                            v-model="description"
+                            label="Viết mô tả ngắn..."
+                            auto-grow
+                            outlined
+                            rows="3"
+                            :rules="[rules.required]"
+                            required
+                        ></v-textarea>
 
-                            <small
-                                class="text-secondary mt-3 d-block font-weight-bold"
-                            >
-                                Nội dung bài đăng
-                            </small>
+                        <small
+                            class="text-secondary mt-3 d-block font-weight-bold"
+                        >
+                            Nội dung bài đăng
+                        </small>
 
-                            <CKEditor v-model="content" />
+                        <CKEditor v-model="content" />
 
-                            <v-file-input
-                                v-model="image"
-                                label="Hình mô tả"
-                                class="mt-4"
-                            ></v-file-input>
+                        <v-file-input
+                            v-model="image"
+                            label="Hình mô tả"
+                            class="mt-4"
+                        ></v-file-input>
 
-                            <v-img
-                                v-if="urlImage.url"
-                                :src="urlImage.url"
-                                :width="200"
-                                :height="200"
-                                :alt="urlImage.name"
-                                cover
-                            ></v-img>
+                        <v-img
+                            v-if="urlImage.url"
+                            :src="urlImage.url"
+                            :width="200"
+                            :height="200"
+                            :alt="urlImage.name"
+                            cover
+                        ></v-img>
 
-                            <v-switch
-                                v-model="popular"
-                                label="Tin nổi bật"
-                                inset
-                                indeterminate
-                                color="primary"
-                            ></v-switch>
-                        </v-card-text>
+                        <v-switch
+                            v-model="popular"
+                            label="Tin nổi bật"
+                            inset
+                            indeterminate
+                            color="primary"
+                        ></v-switch>
+                    </v-card-text>
 
-                        <v-card-actions>
-                            <v-btn
-                                :loading="
-                                    mutationAdd.isPending.value ||
-                                    mutationEdit.isPending.value
-                                "
-                                variant="tonal"
-                                @click="submit"
-                                class="action-icon-btn"
-                            >
-                                {{ id ? "Lưu thay đổi" : "Thêm mới" }}
-                            </v-btn>
+                    <v-card-actions>
+                        <v-btn
+                            :loading="
+                                mutationAdd.isPending.value ||
+                                mutationEdit.isPending.value
+                            "
+                            variant="tonal"
+                            @click="submit"
+                            class="action-icon-btn"
+                        >
+                            {{ id ? "Lưu thay đổi" : "Thêm mới" }}
+                        </v-btn>
 
-                            <v-btn
-                                :loading="
-                                    mutationAdd.isPending.value ||
-                                    mutationEdit.isPending.value
-                                "
-                                color="secondary"
-                                variant="tonal"
-                                @click="reset"
-                            >
-                                Nhập lại
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-form>
-            </v-container>
-        </v-form>
+                        <v-btn
+                            :loading="
+                                mutationAdd.isPending.value ||
+                                mutationEdit.isPending.value
+                            "
+                            color="secondary"
+                            variant="tonal"
+                            @click="reset"
+                        >
+                            Nhập lại
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-form>
+        </v-container>
     </v-card>
 </template>
 

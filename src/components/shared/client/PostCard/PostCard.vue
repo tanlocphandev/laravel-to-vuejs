@@ -1,34 +1,81 @@
-<script setup></script>
+<script setup>
+import { useGetNews } from "@/hooks/news.hook";
+import { fDate } from "@/utils";
+
+const { data, isLoading } = useGetNews(
+    {
+        page: 1,
+        order: "desc",
+        limit: 999999,
+        sort: "created_at",
+        include_comment: "true",
+    },
+    (data) => {
+        if (data?.metadata) return data?.metadata[0];
+        return null;
+    }
+);
+</script>
 
 <template>
-    <div class="main-content">
+    <v-container v-if="isLoading">
+        <v-row>
+            <v-col cols="12" md="12">
+                <v-skeleton-loader type="heading"></v-skeleton-loader>
+            </v-col>
+
+            <v-col
+                v-for="item in 1"
+                :key="item"
+                cols="12"
+                md="12"
+                class="border"
+            >
+                <v-row>
+                    <v-col cols="6" md="6">
+                        <v-skeleton-loader
+                            class="h-100"
+                            type="image"
+                        ></v-skeleton-loader>
+                    </v-col>
+                    <v-col cols="6" md="6">
+                        <v-skeleton-loader type="article"></v-skeleton-loader>
+                    </v-col>
+                </v-row>
+            </v-col>
+        </v-row>
+    </v-container>
+
+    <div class="main-content" v-else>
         <div class="text-title">
             <h1>Tin tức mới nhất</h1>
         </div>
-        <div class="text-content">
+        <div class="text-content py-3">
             <div class="content-img">
-                <v-img src="assets/home/1556362611TinTuc1.jpg" class="image"></v-img>
+                <v-img :src="data?.hinhdaidien" class="image"></v-img>
             </div>
             <div class="description">
-                <h1>Hội Thi " Tìm Hiểu Chương Trình Giáo Dục"</h1>
+                <router-link
+                    :to="{ name: 'news_details', params: { id: data?.id } }"
+                    class="description-title"
+                >
+                    {{ data?.tieude }}
+                </router-link>
                 <div class="description-date">
                     <v-icon class="mr-1"> mdi-calendar</v-icon>
-                    <p class="mr-1">2019-04-27</p>
-                    <p>17:56:51</p>
+                    <p>{{ fDate(data?.created_at, "DD/MM/YYYY") }}</p>
                 </div>
                 <p class="mt-1">
-                    Chương trình Giáo dục phổ thông tổng thể (2017) và Chương trình giáo dục phổ
-                    thông các môn học (Ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26 tháng
-                    12 năm 2018 của
+                    {{ data?.mota }}
                 </p>
                 <div class="description-icon">
                     <div>
                         <v-icon class="mr-1">mdi-eye</v-icon>
-                        <p>: 2</p>
+                        <p>: {{ data?.luotxem }}</p>
                     </div>
                     <div>
                         <v-icon class="mr-1">mdi-comment</v-icon>
-                        <p>: 0 bình luận</p>
+                        <p>: {{ data?.binhluan?.length }} bình luận</p>
                     </div>
                 </div>
             </div>
@@ -73,7 +120,8 @@
     padding: 14px 18px;
 }
 
-.description h1 {
+.description-title {
+    text-decoration: none;
     font-size: 18px;
     font-weight: 700;
     color: var(--primary);
@@ -81,7 +129,7 @@
     text-transform: capitalize;
 }
 
-.description h1:hover {
+.description-title:hover {
     text-shadow: #3a33be 2px 2px 10px;
     cursor: pointer;
 }
@@ -91,6 +139,7 @@
     font-weight: lighter;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-clamp: 7;
     -webkit-line-clamp: 7;
     display: -webkit-box;
     -webkit-box-orient: vertical;

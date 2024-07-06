@@ -27,13 +27,14 @@ export const useGetNewsDetails = (newId, params = {}, enabled = true) => {
     return { isLoading, data };
 };
 
-export const useGetNews = (params = {}) => {
+export const useGetNews = (params = {}, select = undefined) => {
     const options = computed(() => {
         return {
             queryKey: queryKeysGetAllNews(params),
             queryFn: () => newsService.get(params),
             staleTime: 5 * 1000,
             keepPreviousData: true,
+            select,
         };
     });
 

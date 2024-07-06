@@ -4,7 +4,7 @@ import CardItem from "@/components/shared/client/CardItem/CardItem.vue";
 import useGetCategory from "@/hooks/category.hook";
 import { fDate } from "@/utils";
 
-const { data } = useGetCategory({
+const { data, isLoading } = useGetCategory({
     include_category: "true",
     include_news: "true",
     order: "asc",
@@ -15,10 +15,34 @@ const { data } = useGetCategory({
 <template>
     <PostCard />
 
+    <v-container v-if="isLoading">
+        <v-row>
+            <v-col cols="12" md="12">
+                <v-skeleton-loader type="heading"></v-skeleton-loader>
+            </v-col>
+
+            <v-col
+                v-for="item in 5"
+                :key="item"
+                cols="12"
+                md="12"
+                class="border"
+            >
+                <v-row>
+                    <v-col cols="6" md="6">
+                        <v-skeleton-loader type="image"></v-skeleton-loader>
+                    </v-col>
+                    <v-col cols="6" md="6">
+                        <v-skeleton-loader type="article"></v-skeleton-loader>
+                    </v-col>
+                </v-row>
+            </v-col>
+        </v-row>
+    </v-container>
+
     <CardItem
         v-for="cardItem in data?.metadata?.filter((t) => t?.hienthi)"
         :key="cardItem.id"
-        :links="cardItems1"
         :titleMain="cardItem.tentheloai"
         :news="cardItem.tintuc"
         :description="cardItem?.tintuc[0]?.mota"

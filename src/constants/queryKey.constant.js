@@ -2,6 +2,10 @@ const queryKeys = {
     category: {
         GET_ALL: "GET_ALL_CATEGORY",
     },
+    users: {
+        DETAILS: "GET_USER_DETAILS",
+        GET_ALL: "GET_ALL_USERS",
+    },
     news: {
         DETAILS: "GET_NEWS_DETAILS",
         GET_ALL: "GET_ALL_NEWS",

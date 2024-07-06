@@ -153,7 +153,7 @@ const onSelectedRed = (item) => {
         icon="mdi-pencil-box-outline"
     />
 
-    <div class="mx-30 pa-30">
+    <div class="mx-30 mb-5">
         <v-row>
             <v-col cols="3">
                 <div class="title-message">

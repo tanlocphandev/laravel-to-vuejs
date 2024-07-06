@@ -105,8 +105,6 @@ export const useGetCountMailbox = () => {
         select: (data) => {
             if (!data?.metadata) return null;
 
-            console.log(`data?.metadata:::`, data?.metadata);
-
             const { countAll, countAnonymous, countNormal } = data.metadata;
 
             return {

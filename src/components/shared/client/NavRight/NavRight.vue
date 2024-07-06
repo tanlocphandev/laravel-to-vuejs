@@ -20,10 +20,19 @@ const { data, isLoading } = useGetNews({
                 <v-skeleton-loader type="heading"></v-skeleton-loader>
             </v-col>
 
-            <v-col v-for="item in 5" :key="item" cols="12" md="12" class="border">
+            <v-col
+                v-for="item in 5"
+                :key="item"
+                cols="12"
+                md="12"
+                class="border"
+            >
                 <v-row>
                     <v-col cols="6" md="6">
-                        <v-skeleton-loader class="image" type="image"></v-skeleton-loader>
+                        <v-skeleton-loader
+                            class="image"
+                            type="image"
+                        ></v-skeleton-loader>
                     </v-col>
 
                     <v-col cols="6" md="6">
@@ -46,7 +55,11 @@ const { data, isLoading } = useGetNews({
                     :to="{ name: 'news_details', params: { id: item?.id } }"
                 >
                     <div class="content-nav-img">
-                        <v-img :src="item?.hinhdaidien" class="image" aspect-ratio="16/9"></v-img>
+                        <v-img
+                            :src="item?.hinhdaidien"
+                            class="image"
+                            aspect-ratio="16/9"
+                        ></v-img>
                     </div>
                     <div class="content-nav-title">{{ item?.tieude }}</div>
                 </router-link>
@@ -125,6 +138,7 @@ const { data, isLoading } = useGetNews({
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 20px;
+    line-clamp: 3;
     -webkit-line-clamp: 3;
     height: 57px;
     display: -webkit-box;
