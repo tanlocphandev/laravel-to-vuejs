@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\CommentController;
 use App\Http\Controllers\Api\V1\CommentDetailsController;
+use App\Http\Controllers\Api\V1\DepartmentController;
+use App\Http\Controllers\Api\V1\DepartmnentController;
 use App\Http\Controllers\Api\V1\FacultyController;
 use App\Http\Controllers\Api\V1\MailboxController;
 use App\Http\Controllers\Api\V1\NewsController;
@@ -34,6 +36,7 @@ Route::prefix('v1')->middleware('cors')->group(function () {
 
     Route::apiResource('about', AboutController::class);
     Route::apiResource('faculty', FacultyController::class);
+    Route::apiResource('department', DepartmentController::class);
     Route::apiResource('news-types', NewsTypesController::class);
     Route::get('mailbox/get/count', [MailboxController::class, 'getCount']);
     Route::apiResource('mailbox', MailboxController::class);
