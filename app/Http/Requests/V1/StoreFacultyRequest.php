@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Http\Requests\V1;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreFacultyRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        if ($this->isMethod('PUT')) {
+            return [
+                'name' => 'required|string|max:199|unique:faculties,NULL,' . $this->faculty . ',id',
+                'image' => 'sometimes|string|max:199',
+                'description' => 'sometimes|string|max:199',
+            ];
+        }
+
+        return [
+            'name' => 'required|string|max:199|unique:faculties',
+            'image' => 'sometimes|string|max:199',
+            'description' => 'sometimes|string|max:199',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'required' => ':attribute không được bỏ trống',
+            'string' => ':attribute phải là chuỗi',
+            'max' => ':attribute ít nhất :max kí tự',
+            'unique' => ':attribute đã tồn tại',
+        ];
+    }
+}
