@@ -25,20 +25,22 @@ class StoreUserRequest extends FormRequest
     {
         if ($this->method() == 'PUT') {
             return [
-                'name' => 'sometimes|string|max:255',
+                'name' => 'sometimes|string|max:255|unique:users,NULL,' . $this->user . ',id',
                 'email' => 'sometimes|string|email|max:255|unique:users,NULL,' . $this->user . ',id',
                 'password' => 'sometimes|string|min:2|max:20',
                 'permission' => 'sometimes|string',
                 'image' => 'sometimes|string',
+                'viewname' => 'sometimes|required|string|max:255',
             ];
         }
 
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:2|max:20',
             'permission' => 'sometimes|string',
             'image' => 'sometimes|string',
+            'viewname' => 'required|string|max:255',
         ];
     }
 

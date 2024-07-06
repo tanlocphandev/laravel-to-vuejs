@@ -43,7 +43,6 @@ class UserController extends Controller
 
         $data = $request->all();
         $data['password'] = bcrypt($data['password']);
-        $data['viewname'] = $data['name'];
         $data['permission'] = $data['permission'] ?? 'SinhVien';
 
         $added = User::create($data);
@@ -89,10 +88,6 @@ class UserController extends Controller
 
         if (isset($data['password'])) {
             unset($data['password']);
-        }
-
-        if (isset($data['name'])) {
-            $data['viewname'] = $data['name'];
         }
 
         $updated = User::where('id', '=', $id)->update($data);
