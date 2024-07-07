@@ -1,49 +1,57 @@
 <script setup>
 import MainTop from "@/components/shared/admin/MainTop";
+import DeleteConfirmDialog from "@/components/shared/dialog/DeleteConfirmDialog.vue";
+import Search from "@/components/ui/Search";
+import queryKeys from "@/constants/queryKey.constant";
+import { useGetFaculty, useMutationDeleteFaculty } from "@/hooks/faculty.hook";
+import { getQueryKeys, urlImage } from "@/utils";
+import { useQueryClient } from "@tanstack/vue-query";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import {
-    useGetNewsTypes,
-    useMutationDeleteNewsTypes,
-} from "@/hooks/newsTypes.hook";
-import DeleteConfirmDialog from "@/components/shared/dialog/DeleteConfirmDialog.vue";
-import { useQueryClient } from "@tanstack/vue-query";
-import { getQueryKeys } from "@/utils";
-import queryKeys from "@/constants/queryKey.constant";
+import { toast } from "vue-sonner";
 
-const router = useRouter();
 const route = useRoute();
-const page = computed(() => parseInt(route.query?.page) || 1);
-const LIMIT = 10;
+const router = useRouter();
+const queryClient = useQueryClient();
+const mutationDelete = useMutationDeleteFaculty();
+
 const openDialog = ref(false);
 const selectedDelete = ref(null);
+
+const page = computed(() => parseInt(route.query?.page) || 1);
+const querySearch = computed(() => route.query?.q || "");
+const isSearching = computed(() => {
+    return querySearch.value.length > 0;
+});
 
 const options = computed(() => {
     return {
         page,
-        limit: LIMIT,
-        include_category: "true",
+        limit: 10,
+        ...(isSearching.value && { "name[like]": querySearch }),
     };
 });
 
-const { data, isLoading } = useGetNewsTypes(options.value);
-const mutationDelete = useMutationDeleteNewsTypes();
-const queryClient = useQueryClient();
+const { data, isLoading } = useGetFaculty(options.value);
 
 const headers = [
     { title: "ID", align: "start", key: "id", maxWidth: 50 },
     {
-        title: "Tên loại tin",
+        title: "Tên khoa",
         align: "start",
-        key: "tenloaitin",
+        key: "name",
         maxWidth: 200,
     },
     {
-        title: "Thuộc thể loại",
+        title: "Hình ảnh",
         align: "start",
-        key: "theloai",
-        maxWidth: 200,
-        value: (value) => value.theloai?.tentheloai,
+        key: "image",
+        sortable: false,
+    },
+    {
+        title: "Mô tả",
+        align: "start",
+        key: "description",
     },
     { title: "Action", key: "actions", sortable: false },
 ];
@@ -55,9 +63,14 @@ const onchangePage = (currentPage) => {
     });
 };
 
+const deleteItem = (item) => {
+    openDialog.value = true;
+    selectedDelete.value = item;
+};
+
 const handleClose = (value) => {
     openDialog.value = value;
-    if(!value) selectedDelete.value = null;
+    if (!value) selectedDelete.value = null;
 };
 
 const handleConfirm = (callback) => {
@@ -65,29 +78,25 @@ const handleConfirm = (callback) => {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: getQueryKeys({
-                    key: queryKeys.newsTypes.GET_ALL,
+                    key: queryKeys.faculty.GET_ALL,
                     ...options.value,
                 }),
                 exact: true,
             });
+            toast.success("Đã xóa thành công!");
             handleClose();
             callback();
         },
     });
 };
-
-const deleteItem = (item) => {
-    openDialog.value = true;
-    selectedDelete.value = item;
-};
 </script>
 
 <template>
-    <MainTop
-        title="Loại tin"
-        sub="Quản lí danh mục loại tin"
+    <main-top
+        title="Khoa"
+        sub="Quản lý danh mục khoa"
         icon="mdi-pencil-box-outline"
-        parent="Tin tức"
+        parent="Nhân sự"
     />
 
     <delete-confirm-dialog
@@ -96,17 +105,24 @@ const deleteItem = (item) => {
         @confirm="handleConfirm"
     />
 
-    <v-card class="mx-30 pa-30 cate-card">
-        <div class="d-flex justify-space-between">
-            <v-card-title class="mb-5">Danh sách loại tin</v-card-title>
+    <v-card class="mx-30 pa-30">
+        <div class="d-flex justify-space-between mb-5">
+            <search
+                placeholder="Tìm kiếm khoa..."
+                width="300px"
+                height="45px"
+                widthIcon="54px"
+            />
+
             <router-link
-                :to="{ name: 'category_create' }"
                 class="text-decoration-none text-white"
+                :to="{ name: 'add_faculty' }"
             >
                 <v-btn
+                    color="success"
                     prepend-icon="mdi-plus-circle-outline"
                     class="action-icon-btn"
-                    color="success"
+                    @click="addNew"
                 >
                     Thêm mới
                 </v-btn>
@@ -125,29 +141,20 @@ const deleteItem = (item) => {
                 <v-skeleton-loader type="table-row@5"></v-skeleton-loader>
             </template>
 
-            <template v-slot:item.hinhdaidien="{ value }">
-                <div class="post-img">
-                    <v-img :src="value"> </v-img>
-                </div>
-            </template>
-
-            <template v-slot:item.mota="{ value }">
-                <div class="post-des">
-                    <p>{{ value }}</p>
-                </div>
-            </template>
-
-            <template v-slot:item.tieude="{ value }">
-                <div class="post-des">
-                    <p>{{ value }}</p>
-                </div>
+            <template v-slot:item.image="{ value }">
+                <v-img :src="urlImage(value, 'faculty')"></v-img>
             </template>
 
             <template v-slot:item.actions="{ item }">
                 <router-link
-                    :to="{ name: 'category_edit', params: { id: item.id } }"
+                    :to="{ name: 'edit_faculty', params: { id: item.id } }"
                 >
-                    <v-icon class="me-2" size="small" color="green">
+                    <v-icon
+                        class="me-2"
+                        size="small"
+                        color="green"
+                        @click="editItem(item)"
+                    >
                         mdi-pencil
                     </v-icon>
                 </router-link>
@@ -169,8 +176,4 @@ const deleteItem = (item) => {
     </v-card>
 </template>
 
-<style lang="css" scoped>
-thead.table-header {
-    font-size: 18px !important;
-}
-</style>
+<style lang="css" scoped></style>

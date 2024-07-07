@@ -56,3 +56,13 @@ export const sortByCreatedAt = (array = []) => {
 export const getQueryKeys = (params = {}) => {
     return paramsToArrString(params);
 };
+
+export const filterValuesEmptyObject = (params = {}) => {
+    Object.entries(params).forEach(([key, value]) => {
+        if (value === "" || value === null || value === undefined) {
+            delete params[key];
+        }
+    });
+
+    return params;
+};

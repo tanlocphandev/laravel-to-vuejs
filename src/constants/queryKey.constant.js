@@ -24,6 +24,18 @@ const queryKeys = {
         GET_ALL: "GET_ALL_MAILBOX",
         COUNT: "COUNT_MAILBOX",
     },
+    faculty: {
+        GET_ALL: "GET_ALL_FACULTY",
+        DETAILS: "GET_FACULTY_DETAILS",
+    },
+    department: {
+        GET_ALL: "GET_ALL_DEPARTMENT",
+        DETAILS: "GET_DEPARTMENT_DETAILS",
+    },
+    personnel: {
+        GET_ALL: "GET_ALL_PERSONNEL",
+        DETAILS: "GET_PERSONNEL_DETAILS",
+    },
 };
 
 export default queryKeys;

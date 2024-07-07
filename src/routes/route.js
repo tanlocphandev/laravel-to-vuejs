@@ -30,8 +30,12 @@ const AddEditAccount = () => import("@/views/admin/AccountView/AddEditAccount.vu
 const AdminMessageView = () => import("@/views/admin/MessageView");
 const AddEditCategory = () => import("@/views/admin/CategoryView/AddEditCategory.vue");
 const AdminPersonnelView = () => import("@/views/admin/PersonalView");
-const AdminFacultyView = () => import("@/views/admin/PersonalView/FacultyView.vue");
-const AdminDepartmentView = () => import("@/views/admin/PersonalView/DepartmentView.vue");
+const AdminFacultyView = () => import("@/views/admin/FacultyView");
+const AdminDepartmentView = () => import("@/views/admin/DepartmentView");
+const AdminAddEditDepartmentView = () =>
+    import("@/views/admin/DepartmentView/AddEditDepartment.vue");
+const AdminAddEditPersonnelView = () => import("@/views/admin/PersonalView/AddEditPersonnel.vue");
+const AdminAddEditFacultyView = () => import("@/views/admin/FacultyView/AddEditFaculty.vue");
 
 /**
  * @type {import("vue-router").RouteRecordRaw}
@@ -196,21 +200,84 @@ const routes = [
             },
             {
                 path: ROUTE_PATHS.AdminPersonnel(),
-                component: AdminPersonnelView,
-                meta: { title: "Nhân sự" },
-                sensitive: true,
+                component: RouterView,
+                children: [
+                    {
+                        path: "",
+                        component: AdminPersonnelView,
+                        name: "personnel",
+                        meta: { title: "Nhân sự" },
+                        sensitive: true,
+                    },
+                    {
+                        path: "add",
+                        component: AdminAddEditPersonnelView,
+                        name: "add_personnel",
+                        meta: { title: "Thêm nhân sự" },
+                        sensitive: true,
+                    },
+                    {
+                        path: "edit/:id",
+                        component: AdminAddEditPersonnelView,
+                        name: "edit_personnel",
+                        meta: { title: "Cập nhật nhân sự" },
+                        sensitive: true,
+                    },
+                ],
             },
             {
                 path: ROUTE_PATHS.AdminDepartment(),
-                component: AdminDepartmentView,
-                meta: { title: "Bộ phận" },
-                sensitive: true,
+                component: RouterView,
+                children: [
+                    {
+                        path: "",
+                        component: AdminDepartmentView,
+                        name: "department",
+                        meta: { title: "Bộ phận" },
+                        sensitive: true,
+                    },
+                    {
+                        path: "add",
+                        component: AdminAddEditDepartmentView,
+                        name: "add_department",
+                        meta: { title: "Thêm bộ phận" },
+                        sensitive: true,
+                    },
+                    {
+                        path: "edit/:id",
+                        component: AdminAddEditDepartmentView,
+                        name: "edit_department",
+                        meta: { title: "Cập nhật bộ phận" },
+                        sensitive: true,
+                    },
+                ],
             },
             {
                 path: ROUTE_PATHS.AdminFaculty(),
-                component: AdminFacultyView,
-                meta: { title: "Khoa" },
-                sensitive: true,
+                component: RouterView,
+                children: [
+                    {
+                        path: "",
+                        component: AdminFacultyView,
+                        name: "faculty",
+                        meta: { title: "Khoa" },
+                        sensitive: true,
+                    },
+                    {
+                        path: "add",
+                        component: AdminAddEditFacultyView,
+                        name: "add_faculty",
+                        meta: { title: "Thêm khoa" },
+                        sensitive: true,
+                    },
+                    {
+                        path: "edit/:id",
+                        component: AdminAddEditFacultyView,
+                        name: "edit_faculty",
+                        meta: { title: "Cập nhật khoa" },
+                        sensitive: true,
+                    },
+                ],
             },
         ],
     },
