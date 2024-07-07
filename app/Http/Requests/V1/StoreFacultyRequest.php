@@ -25,7 +25,7 @@ class StoreFacultyRequest extends FormRequest
     {
         if ($this->isMethod('PUT')) {
             return [
-                'name' => 'required|string|max:199|unique:faculties,NULL,' . $this->faculty . ',id',
+                'name' => 'sometimes|required|string|max:199|unique:faculties,NULL,' . $this->faculty,
                 'image' => 'sometimes|string|max:199',
                 'description' => 'sometimes|string|max:199',
             ];

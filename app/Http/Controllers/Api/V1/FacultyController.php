@@ -100,11 +100,11 @@ class FacultyController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  StoreFacultyRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(StoreFacultyRequest $request, $id)
     {
         $updated = Faculty::where('id', '=', $id)->update($request->all());
 
