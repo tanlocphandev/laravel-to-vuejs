@@ -7,8 +7,13 @@ export const rules = {
         const pattern = /^[0-9]*$/;
         return pattern.test(value) || "Phải là số.";
     },
+    numeric: (value) => {
+        const pattern = /^[+-]?\d+(\.\d+)?$/;
+        return pattern.test(value) || "Phải là số.";
+    },
     phone: (value) => {
-        const pattern = /^((09|03|07|08|05)+([0-9]{8})\b)$/;
+        // const pattern = /^((09|03|07|08|05)+([0-9]{8})\b)$/;
+        const pattern = /((0[1|2|3|4|5|6|7|8|9])+([0-9]{8})\b)/g;
         return pattern.test(value) || "Số điện thoại không hợp lệ.";
     },
     match:

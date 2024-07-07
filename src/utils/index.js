@@ -28,7 +28,7 @@ export const paramsToArrString = (params = {}) => {
 };
 
 export const mapParamsToValues = (params) => {
-    return typeof params === "object" ? params.value : params;
+    return typeof params === "object" ? params?.value : params;
 };
 
 export const mapParamsToQuery = (params = {}) => {
@@ -65,4 +65,8 @@ export const filterValuesEmptyObject = (params = {}) => {
     });
 
     return params;
+};
+
+export const fPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(price);
 };

@@ -13,7 +13,6 @@ export const useGetPersonnel = (params = {}, select = undefined) => {
             select,
             staleTime: 5 * 1000,
             keepPreviousData: true,
-            enable: Boolean(id.value),
         };
     });
 
@@ -23,7 +22,7 @@ export const useGetPersonnel = (params = {}, select = undefined) => {
 export const useGetPersonnelDetails = ({ id, params = {}, select = undefined }) => {
     const options = computed(() => {
         return {
-            queryFn: () => personnelService.getById(id),
+            queryFn: () => personnelService.getById(id, params),
             queryKey: getQueryKeys({ key: queryKeys.personnel.DETAILS, ...params }),
             select,
             enabled: Boolean(id.value),

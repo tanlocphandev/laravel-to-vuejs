@@ -1,4 +1,5 @@
 <script setup>
+import { rules } from "@/utils/rule";
 import { ref, watchEffect } from "vue";
 
 const props = defineProps({

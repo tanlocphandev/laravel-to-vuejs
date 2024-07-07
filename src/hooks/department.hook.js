@@ -1,11 +1,11 @@
 import queryKeys from "@/constants/queryKey.constant";
 import departmentService from "@/services/department.service";
-import { getQueryKeys } from "@/utils";
+import { getQueryKeys, mapParamsToValues } from "@/utils";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 import { toast } from "vue-sonner";
 
-export const useGetDepartment = (params = {}, select = undefined) => {
+export const useGetDepartment = (params = {}, select = undefined, enabled = true) => {
     const options = computed(() => {
         return {
             queryFn: () => departmentService.get(params),
@@ -13,6 +13,7 @@ export const useGetDepartment = (params = {}, select = undefined) => {
             select,
             staleTime: 5 * 1000,
             keepPreviousData: true,
+            enabled: mapParamsToValues(enabled),
         };
     });
 
