@@ -28,7 +28,7 @@ const options = computed(() => {
     return {
         page,
         limit: 10,
-        ...(isSearching.value && { "name[like]": querySearch }),
+        ...(isSearching && { "name[like]": querySearch }),
     };
 });
 

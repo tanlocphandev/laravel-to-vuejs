@@ -137,6 +137,7 @@ const handleOnFileChange = (file) => {
                             v-model="state.description"
                             label="Mô tả"
                             placeholder="Viết mô tả khoa...  (không bắt buộc)"
+                            rows="2"
                         ></v-textarea>
 
                         <upload-file-image
