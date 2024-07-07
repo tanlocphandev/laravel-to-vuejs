@@ -32,7 +32,13 @@ class ApiFilter
                         $query[$operator] = '%' . $query[$operator] . '%';
                     }
 
-                    $eloQuery[] = [$column, $this->operatorMap[$operator], $query[$operator]];
+                    if ($operator === 'orLike') {
+                        $query[$operator] = '%' . $query[$operator] . '%';
+                        $eloQuery[] = [$column, $this->operatorMap[$operator], $query[$operator], 'or'];
+                    }
+
+                    if ($operator !== 'orLike')
+                        $eloQuery[] = [$column, $this->operatorMap[$operator], $query[$operator]];
                 }
             }
         }

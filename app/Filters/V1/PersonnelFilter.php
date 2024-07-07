@@ -7,10 +7,10 @@ use App\Filters\ApiFilter;
 class PersonnelFilter extends ApiFilter
 {
     protected $safeParams = [
-        'first_name'  => ['like', 'eq'],
-        'last_name'  => ['like', 'eq'],
-        'email'  => ['eq'],
-        'phone'  => ['eq'],
+        'first_name'  => ['like', 'eq', 'orLike'],
+        'last_name'  => ['like', 'eq', 'orLike'],
+        'email'  => ['eq', 'orLike', 'like'],
+        'phone'  => ['eq', 'orLike'],
         'dob'  => ['eq'],
         'address'  => ['eq', 'like'],
         'description'  => ['eq', 'like'],
@@ -40,6 +40,7 @@ class PersonnelFilter extends ApiFilter
 
     protected $operatorMap = [
         'like' => 'LIKE',
+        'orLike' => 'LIKE',
         'eq' => '=',
         'gte' => '>=',
         'lte' => '<=',
