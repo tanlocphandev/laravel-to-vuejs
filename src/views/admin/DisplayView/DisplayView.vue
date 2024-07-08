@@ -1,13 +1,20 @@
 <script setup>
 import MainTop from "@/components/shared/admin/MainTop";
+import queryKeys from "@/constants/queryKey.constant";
 import useGetCategory, {
     queryKeyCategory,
     useMutationChangeDisplayCategory,
     useMutationSortPriority,
 } from "@/hooks/category.hook";
-import { getQueryKeys } from "@/utils";
+import {
+    useGetNotification,
+    useMutationAddNotification,
+    useMutationEditNotification,
+} from "@/hooks/notification.hook";
+import { fDate, getQueryKeys } from "@/utils";
+import { rules } from "@/utils/rule";
 import { useQueryClient } from "@tanstack/vue-query";
-import { ref, onMounted, computed, watchEffect } from "vue";
+import { ref, onMounted, computed, watchEffect, watch } from "vue";
 import { toast } from "vue-sonner";
 
 const options = computed(() => {
@@ -17,6 +24,22 @@ const options = computed(() => {
         sort: "uutien",
     };
 });
+
+const formData = ref({
+    Title: "",
+    Content: "",
+    Note: "",
+    DateStart: null,
+    DateEnd: null,
+});
+
+const form = ref(null);
+const valid = ref(false);
+
+const getNotification = useGetNotification();
+
+const mutationAddNotification = useMutationAddNotification();
+const mutationEditNotification = useMutationEditNotification();
 
 const { data, isLoading } = useGetCategory(options.value);
 const queryClient = useQueryClient();
@@ -31,6 +54,14 @@ watchEffect(() => {
         selectedCheckboxes.value = data.value?.metadata
             .filter((t) => t.hienthi)
             .map((item) => item.id);
+    }
+
+    if(getNotification.data.value?.id){
+        formData.value.Title = getNotification.data.value.tieude;
+        formData.value.Content = getNotification.data.value.noidung;
+        formData.value.Note = getNotification.data.value.ghichu;
+        formData.value.DateEnd = getNotification.data.value.ngayhethan;
+        formData.value.DateStart = getNotification.data.value.ngaybatdau;
     }
 });
 
@@ -127,44 +158,53 @@ const moveItemDown = (index, id) => {
     }
 };
 
-const formData = ref({
-    Title: "",
-    Content: "",
-    Note: "",
-    DateStart: "",
-    DateEnd: "",
-});
+const submitForm = async () => {
+    const { valid } = await form.value.validate();
 
-// Khôi phục dữ liệu từ localStorage khi tải trang
-onMounted(() => {
-    const savedData = localStorage.getItem("formData");
+    if (!valid) return;
 
-    if (savedData) {
-        Object.assign(formData.value, JSON.parse(savedData));
+    const payload = {
+        tieude: formData.value.Title,
+        noidung: formData.value.Content,
+        ghichu: formData.value.Note,
+        ngaybatdau: formData.value.DateStart,
+        ngayhethan: formData.value.DateEnd,
+    };
+
+    if (getNotification.data.value?.id) {
+        // update getNotification
+        mutationEditNotification.mutate(
+            { id: getNotification.data.value.id, ...payload },
+            {
+                onSuccess: () => {
+                    queryClient.invalidateQueries({
+                        queryKey: queryKeyCategory({
+                            key: queryKeys.notification.GET_ALL,
+                        }),
+                        exact: true,
+                    });
+
+                    toast.success("Đã cập nhật thành công.");
+                },
+            }
+        );
+
+        return;
     }
-});
 
-const submitForm = () => {
-    // Lưu dữ liệu vào localStorage
-    localStorage.setItem("formData", JSON.stringify(formData.value));
+    // create notification
+    mutationAddNotification.mutate(payload, {
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: queryKeyCategory({
+                    key: queryKeys.notification.GET_ALL,
+                }),
+                exact: true,
+            });
 
-    // Thực hiện lưu dữ liệu (ví dụ: gửi request API)
-    saveData(formData.value);
-
-    // Hiển thị thông báo alert
-    showSuccessAlert();
-};
-
-const saveData = (formData) => {
-    // Đoạn này là nơi bạn có thể thực hiện lưu dữ liệu, ví dụ như gửi request API
-    console.log("Saving data:", formData);
-    // Đoạn này có thể gửi request API để lưu dữ liệu vào server
-};
-
-const showSuccessAlert = () => {
-    alert("Thông báo đã được tải lên thành công!");
-    // Hoặc sử dụng v-alert của Vuetify để hiển thị thông báo
-    // Ví dụ: showSnackbar = true;
+            toast.success("Đã thêm thông báo mới thành công.");
+        },
+    });
 };
 
 const getCategoryById = (id) => {
@@ -263,83 +303,115 @@ const getCategoryById = (id) => {
 
             <v-col class="padding-0">
                 <v-card-title>Cập nhật thông báo</v-card-title>
-                <div class="text-content">
-                    <div class="form-group">
-                        <div class="form-group has-success">
-                            <label
-                                class="form-control-label mb-2 color-primary"
-                                for="inputSuccess1"
-                                >Tiêu đề</label
-                            >
-                            <input
-                                v-model="formData.Title"
-                                class="form-control is-valid content-info"
-                                id="inputValid"
-                                type="text"
-                                placeholder="Nhập tiêu đề"
-                            />
-                        </div>
+                <v-form @submit.prevent="submitForm" ref="form" v-model="valid">
+                    <div class="text-content">
                         <div class="form-group">
-                            <label class="color-primary">Nội dung</label>
-                            <textarea
-                                v-model="formData.Content"
-                                class="form-control content-info mt-2"
-                                id="exampleTextarea"
-                                rows="5"
-                                placeholder="Nhập nội dung"
-                            ></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label
-                                class="col-form-label color-primary"
-                                for="inputDefault"
-                                >Ghi chú</label
-                            >
-                            <input
-                                v-model="formData.Note"
-                                class="form-control content-info"
-                                id="inputDefault"
-                                type="text"
-                                placeholder="Nhập ghi chú"
-                            />
-                        </div>
-                        <div class="form-group">
-                            <label
-                                class="col-form-label color-primary"
-                                for="inputDefault"
-                                >Ngày bắt đầu</label
-                            >
-                            <input
-                                v-model="formData.DateStart"
-                                class="form-control demoDate content-info"
-                                type="text"
-                                placeholder="Chọn ngày"
-                            />
-                        </div>
-                        <div class="form-group">
-                            <label
-                                class="col-form-label color-primary"
-                                for="inputDefault"
-                                >Ngày hết hạn</label
-                            >
-                            <input
-                                v-model="formData.DateEnd"
-                                class="form-control demoDate content-info"
-                                type="text"
-                                placeholder="Chọn ngày"
-                            />
-                        </div>
-                        <div class="form-group">
-                            <v-btn
-                                @click="submitForm"
-                                class="card-display-btn cus-btn"
-                            >
-                                <v-icon class="mr-2">mdi-check</v-icon>
-                                Tải lên thông báo mới
-                            </v-btn>
+                            <div class="form-group has-success">
+                                <div
+                                    class="text-subtitle-1 text-medium-emphasis"
+                                >
+                                    Tiêu đề
+                                </div>
+
+                                <v-text-field
+                                    v-model="formData.Title"
+                                    density="compact"
+                                    placeholder="Nhập tiêu đề"
+                                    variant="outlined"
+                                    :rules="[rules.required, rules.max(255)]"
+                                ></v-text-field>
+                            </div>
+
+                            <div class="form-group">
+                                <div
+                                    class="text-subtitle-1 text-medium-emphasis"
+                                >
+                                    Nội dung
+                                </div>
+
+                                <v-textarea
+                                    v-model="formData.Content"
+                                    density="compact"
+                                    placeholder="Nhập nội dung"
+                                    variant="outlined"
+                                    :rules="[rules.required]"
+                                    auto-grow
+                                ></v-textarea>
+                            </div>
+                            <div class="form-group">
+                                <div
+                                    class="text-subtitle-1 text-medium-emphasis"
+                                >
+                                    Ghi chú
+                                </div>
+
+                                <v-textarea
+                                    v-model="formData.Note"
+                                    density="compact"
+                                    placeholder="Nhập ghi chú"
+                                    variant="outlined"
+                                    :rules="[rules.required]"
+                                    auto-grow
+                                    :rows="1"
+                                ></v-textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <div
+                                    class="text-subtitle-1 text-medium-emphasis"
+                                >
+                                    Ngày bắt đầu
+                                </div>
+
+                                <v-text-field
+                                    v-model="formData.DateStart"
+                                    density="compact"
+                                    placeholder="Nhập ngày bắt đầu"
+                                    hint="Ngày bắt đầu (VD: 2022-01-01)"
+                                    variant="outlined"
+                                    :rules="[rules.required, rules.date]"
+                                ></v-text-field>
+                            </div>
+                            <div class="form-group">
+                                <div
+                                    class="text-subtitle-1 text-medium-emphasis"
+                                >
+                                    Ngày hết hạn
+                                </div>
+
+                                <v-text-field
+                                    v-model="formData.DateEnd"
+                                    density="compact"
+                                    placeholder="Nhập ngày hết hạn"
+                                    hint="Ngày hết hạn (VD: 2022-01-01)"
+                                    variant="outlined"
+                                    :rules="[rules.required, rules.date]"
+                                ></v-text-field>
+                            </div>
+
+                            <div class="form-group">
+                                <v-btn
+                                    type="submit"
+                                    @click="submitForm"
+                                    class="card-display-btn cus-btn"
+                                    :loading="
+                                        mutationAddNotification.isPending
+                                            .value ||
+                                        mutationEditNotification.isPending.value
+                                    "
+                                    :disabled="
+                                        mutationAddNotification.isPending
+                                            .value ||
+                                        mutationEditNotification.isPending.value
+                                    "
+                                >
+                                    <v-icon class="mr-2">mdi-check</v-icon>
+                                    Tải lên thông báo mới
+                                </v-btn>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </v-form>
             </v-col>
         </v-row>
     </v-card>

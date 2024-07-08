@@ -71,7 +71,7 @@ const onSubmit = async () => {
         faculty_id: state.faculty_id,
     };
 
-    if (!Boolean(state.image)) {
+    if (!Boolean(payload.image)) {
         toast.error("Vui lòng chọn hình ảnh");
         return;
     }

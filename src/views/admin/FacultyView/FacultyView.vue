@@ -116,7 +116,7 @@ const handleConfirm = (callback) => {
                 widthIcon="54px"
             />
 
-            <router-link
+            <!-- <router-link
                 class="text-decoration-none text-white"
                 :to="{ name: 'add_faculty' }"
             >
@@ -128,7 +128,7 @@ const handleConfirm = (callback) => {
                 >
                     Thêm mới
                 </v-btn>
-            </router-link>
+            </router-link> -->
         </div>
 
         <v-data-table
@@ -161,9 +161,9 @@ const handleConfirm = (callback) => {
                     </v-icon>
                 </router-link>
 
-                <v-icon size="small" color="red" @click="deleteItem(item)">
+                <!-- <v-icon size="small" color="red" @click="deleteItem(item)">
                     mdi-delete
-                </v-icon>
+                </v-icon> -->
             </template>
         </v-data-table>
 

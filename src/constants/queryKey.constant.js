@@ -37,6 +37,12 @@ const queryKeys = {
         GET_ALL: "GET_ALL_PERSONNEL",
         DETAILS: "GET_PERSONNEL_DETAILS",
     },
+    statistics: {
+        COUNT: "STATISTICS_COUNT",
+    },
+    notification: {
+        GET_ALL: "GET_ALL_NOTIFICATION",
+    },
 };
 
 export default queryKeys;

@@ -60,6 +60,10 @@ const handleLogout = () => {
                         v-if="Boolean(userId)"
                         class="custom-btn"
                         variant="text"
+                        like
+                        :to="{
+                            name: 'profile',
+                        }"
                     >
                         Trang cá nhân
                     </v-btn>

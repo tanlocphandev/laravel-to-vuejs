@@ -21,6 +21,15 @@ export const fDate = (date, format = "DD MMMM YYYY") => {
     return moment(date).format(format);
 };
 
+export const compareDateCurrent = (startDate, endDate) => {
+    const currentDate = moment();
+
+    return (
+        moment(startDate, "YYYY-MM-DD 00:00:00").isBefore(currentDate) &&
+        moment(endDate, "YYYY-MM-DD 00:00:00").isAfter(currentDate)
+    );
+};
+
 export const paramsToArrString = (params = {}) => {
     return Object.entries(params).map(([key, value]) => {
         return mapParamsToValues(value);

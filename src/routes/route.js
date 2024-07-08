@@ -4,6 +4,7 @@ import { ROUTE_PATHS } from "../constants/route.constant";
 import { AuthLocalStorageService } from "@/services/auth.service";
 import { useGetMe } from "@/hooks/auth.hook";
 import { PERMISSIONS } from "@/constants";
+import { sleep } from "@/utils";
 
 // VIEW IMPORT LAYOUT
 const AdminLayout = () => import("@/components/layouts/AdminLayout.vue");
@@ -19,6 +20,7 @@ const HomeView = () => import("@/views/HomeView");
 const NewView = () => import("@/views/NewView");
 const NewDetailView = () => import("@/views/NewView/NewDetailView.vue");
 const NotFoundView = () => import("@/views/NotFoundView");
+const ProfileView = () => import("@/views/ProfileView");
 
 // VIEW IMPORT FOR AUTH
 const LoginView = () => import("@/views/auth/LoginView");
@@ -54,6 +56,16 @@ const routes = [
                 path: ROUTE_PATHS.Home,
                 component: HomeView,
                 meta: { title: "Trang chủ" },
+            },
+            {
+                path: ROUTE_PATHS.Profile,
+                component: ProfileView,
+                name: "profile",
+                meta: {
+                    title: "Trang cá nhân",
+                    requiresAuth: true,
+                    permissions: [PERMISSIONS.STUDENT, PERMISSIONS.TEACHER, PERMISSIONS.ADMIN],
+                },
             },
             {
                 path: ROUTE_PATHS.About,
@@ -290,13 +302,13 @@ const routes = [
                         meta: { title: "Khoa" },
                         sensitive: true,
                     },
-                    {
-                        path: "add",
-                        component: AdminAddEditFacultyView,
-                        name: "add_faculty",
-                        meta: { title: "Thêm khoa" },
-                        sensitive: true,
-                    },
+                    // {
+                    //     path: "add",
+                    //     component: AdminAddEditFacultyView,
+                    //     name: "add_faculty",
+                    //     meta: { title: "Thêm khoa" },
+                    //     sensitive: true,
+                    // },
                     {
                         path: "edit/:id",
                         component: AdminAddEditFacultyView,
@@ -316,7 +328,10 @@ const router = createRouter({
     routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
+    NProgress.start();
+    window.scrollTo(0, 0);
+
     const userId = AuthLocalStorageService.getAuth();
 
     const { data } = useGetMe({
@@ -324,6 +339,8 @@ router.beforeEach((to, from, next) => {
         enabled: Boolean(userId),
         select: (data) => data?.metadata,
     });
+
+    // await sleep();
 
     if (from.name === "login") {
         return next();
@@ -342,7 +359,7 @@ router.beforeEach((to, from, next) => {
     }
 
     if (to.meta?.requiresAuth) {
-        if (!userId || !data.value) {
+        if (!userId) {
             return next({ name: "login" });
         } else if (to.meta?.permissions) {
             if (to.meta?.permissions?.includes(data.value?.permission)) {
@@ -356,10 +373,6 @@ router.beforeEach((to, from, next) => {
     }
 
     if (to.meta?.permissions) {
-        if (!data.value) {
-            return next({ name: "login" });
-        }
-
         if (to.meta?.permissions?.includes(data.value?.permission)) {
             return next();
         } else {
@@ -373,8 +386,6 @@ router.beforeEach((to, from, next) => {
 router.beforeEach((to, from, next) => {
     document.title = `${to.meta?.title || ""} | KhoaLuan`;
 
-    NProgress.start();
-    window.scrollTo(0, 0);
     next();
 });
 

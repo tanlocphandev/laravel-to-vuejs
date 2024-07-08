@@ -29,7 +29,7 @@ export const rules = {
         return pattern.test(value) || "Giờ không hợp lệ.";
     },
     datetime: (value) => {
-        const pattern = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
+        const pattern = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
         return pattern.test(value) || "Ngày và giờ không hợp lệ.";
     },
     username: (value) => {

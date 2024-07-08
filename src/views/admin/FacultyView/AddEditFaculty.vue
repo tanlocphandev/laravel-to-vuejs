@@ -64,7 +64,7 @@ const onSubmit = async () => {
         image: state.imageName,
     };
 
-    if (!Boolean(state.image)) {
+    if (!Boolean(payload.image)) {
         toast.error("Vui lòng chọn hình đại diện!");
         return;
     }

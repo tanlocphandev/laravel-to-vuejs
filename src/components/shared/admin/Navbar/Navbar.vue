@@ -3,6 +3,7 @@ import { computed, inject, ref } from "vue";
 import { ROUTE_PATHS } from "@/constants/route.constant";
 import { AuthLocalStorageService } from "@/services/auth.service";
 import { getAuth, useGetMe } from "@/hooks/auth.hook";
+import { urlImage } from "@/utils";
 
 const drawer = inject("drawer");
 
@@ -63,7 +64,13 @@ const personals = [
     <v-navigation-drawer class="mt-5 navigation" :rail="drawer">
         <v-sheet v-if="!drawer" class="nav-content pa-4">
             <v-avatar size="50" class="mr-4 ml-1">
-                <v-img src="/assets/avatar.jpg"></v-img>
+                <v-img
+                    :src="
+                        data?.image
+                            ? urlImage(data?.image, 'avatar')
+                            : '/assets/avatar.jpg'
+                    "
+                ></v-img>
             </v-avatar>
 
             <div>
@@ -74,7 +81,13 @@ const personals = [
 
         <v-sheet v-else class="nav-content my-4">
             <v-avatar size="42" class="ml-2">
-                <v-img src="/assets/avatar.jpg"></v-img>
+                <v-img
+                    :src="
+                        data?.image
+                            ? urlImage(data?.image, 'avatar')
+                            : '/assets/avatar.jpg'
+                    "
+                ></v-img>
             </v-avatar>
         </v-sheet>
 

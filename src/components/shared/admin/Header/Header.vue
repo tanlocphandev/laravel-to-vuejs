@@ -6,11 +6,14 @@ import { useGetCountMailbox } from "@/hooks/mailbox.hook";
 import { AuthLocalStorageService } from "@/services/auth.service";
 import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
+import { getAuth } from "@/hooks/auth.hook";
 
 const drawer = inject("drawer");
 
 const { data } = useGetCountMailbox();
 const router = useRouter();
+
+const { userId } = getAuth();
 
 const countMailbox = computed(() => {
     if (!data?.value) return false;
@@ -44,8 +47,9 @@ const handleLogout = () => {
                 <v-btn
                     :to="ROUTE_PATHS.Home"
                     class="home-page-btn action-icon-btn"
-                    >Client page</v-btn
                 >
+                    Client page
+                </v-btn>
             </div>
             <div class="top-right">
                 <Search width="198px" height="33px" widthIcon="49px" />
@@ -73,9 +77,18 @@ const handleLogout = () => {
                     <v-card>
                         <v-card-text>
                             <div class="card-avatar">
-                                <v-btn class="custom-btn" variant="text">
-                                    Trang cá nhân</v-btn
+                                <v-btn
+                                    v-if="userId"
+                                    link
+                                    :to="{
+                                        name: 'account_edit',
+                                        params: { id: userId },
+                                    }"
+                                    class="custom-btn"
+                                    variant="text"
                                 >
+                                    Trang cá nhân
+                                </v-btn>
                                 <v-btn
                                     class="custom-btn"
                                     variant="text"

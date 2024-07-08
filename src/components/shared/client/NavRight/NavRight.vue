@@ -1,9 +1,15 @@
 <script setup>
 import { useGetNews } from "@/hooks/news.hook";
 import { ref } from "vue";
+import { useGetNotification } from "@/hooks/notification.hook";
+import { compareDateCurrent, fDate } from "@/utils";
+import moment from "moment";
 
 const page = ref(1);
 const LIMIT = 5;
+
+const { data: notification, isLoading: isLoadingNotification } =
+    useGetNotification();
 
 const { data, isLoading } = useGetNews({
     page: page,
@@ -14,6 +20,39 @@ const { data, isLoading } = useGetNews({
 </script>
 
 <template>
+    <div
+        class="mb-4"
+        v-if="
+            notification &&
+            compareDateCurrent(notification.ngaybatdau, notification.ngayhethan)
+        "
+    >
+        <div class="text-center text-title">Thông báo</div>
+
+        <div class="content-nav">
+            <div class="text-center pt-2">
+                {{ notification?.tieude }}
+            </div>
+
+            <div class="content-nav-item">
+                <div v-html="notification?.noidung" />
+            </div>
+
+            <div class="px-3 pb-2">
+                {{ notification?.ghichu }}
+            </div>
+
+            <small class="px-3 pb-2 font-weight-bold">
+                {{
+                    `Cập nhật ngày ${fDate(
+                        notification?.updated_at,
+                        "DD/MM/YYYY HH:mm"
+                    )}`
+                }}
+            </small>
+        </div>
+    </div>
+
     <v-container v-if="isLoading">
         <v-row>
             <v-col cols="12" md="12">
