@@ -1,9 +1,14 @@
 <script setup>
 import ShareFB from "@/components/shared/ShareFB.vue";
+import { getAuth } from "@/hooks/auth.hook";
 import {
     queryKeysGetAllComment,
     useGetCommentByNews,
     useMutationAddComment,
+    useMutationDeleteComment,
+    useMutationDeleteReplyComment,
+    useMutationEditComment,
+    useMutationEditReplyComment,
     useMutationReplyComment,
 } from "@/hooks/comment.hook";
 import { useGetNewsDetails } from "@/hooks/news.hook";
@@ -12,12 +17,15 @@ import CommentCard from "@/views/NewView/components/CommentCard.vue";
 import FormComment from "@/views/NewView/components/FormComment.vue";
 import { useQueryClient } from "@tanstack/vue-query";
 import { computed, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { toast } from "vue-sonner";
+import DeleteConfirmDialog from "@/components/shared/dialog/DeleteConfirmDialog.vue";
 
 const route = useRoute();
-
+const router = useRouter();
 const newsId = computed(() => route.params.id);
+
+const { data: user, userId } = getAuth();
 
 const { data, isLoading } = useGetNewsDetails(newsId, {
     include_user: "true",
@@ -37,16 +45,83 @@ const { data: comments, isLoading: isLoadingComments } = useGetCommentByNews(
     options.value
 );
 
+const selectedModify = ref({
+    open: false,
+    key: "",
+    data: null,
+});
+
 const mutationAddComment = useMutationAddComment();
 const mutationReplyComment = useMutationReplyComment();
+const mutationEditComment = useMutationEditComment();
+const mutationEditReplyComment = useMutationEditReplyComment();
+const mutationDeleteComment = useMutationDeleteComment();
+const mutationDeleteReplyComment = useMutationDeleteReplyComment();
 const queryClient = useQueryClient();
 
 const handleSubmitNewComment = ({ comment, callback }) => {
+    if (!userId.value) {
+        toast.error("Vui lòng đăng nhập để bình luận");
+        router.push({ name: "login" });
+        return;
+    }
+
     const payload = {
         noidung: comment,
-        id_user: 1,
+        id_user: userId.value,
         id_tintuc: newsId.value,
     };
+
+    if (selectedModify.value.data) {
+        if (selectedModify.value.key === "editComment") {
+            mutationEditComment.mutate(
+                {
+                    ...payload,
+                    id: selectedModify.value.data.id,
+                },
+                {
+                    onSuccess: () => {
+                        toast.success("Chỉnh sửa bình luận thành công");
+                        queryClient.invalidateQueries({
+                            queryKey: queryKeysGetAllComment(options.value),
+                            exact: true,
+                        });
+                        callback();
+                        selectedModify.value = {
+                            open: false,
+                            key: "",
+                            data: null,
+                        };
+                    },
+                }
+            );
+        }
+
+        if (selectedModify.value.key === "editCommentChild") {
+            const payload = {
+                noidung: comment,
+                id: selectedModify.value.data.id,
+            };
+
+            mutationEditReplyComment.mutate(payload, {
+                onSuccess: () => {
+                    toast.success("Chỉnh sửa bình luận thành công");
+                    queryClient.invalidateQueries({
+                        queryKey: queryKeysGetAllComment(options.value),
+                        exact: true,
+                    });
+                    callback();
+                    selectedModify.value = {
+                        open: false,
+                        key: "",
+                        data: null,
+                    };
+                },
+            });
+        }
+
+        return;
+    }
 
     mutationAddComment.mutate(payload, {
         onSuccess: () => {
@@ -61,9 +136,15 @@ const handleSubmitNewComment = ({ comment, callback }) => {
 };
 
 const handleSubmitReplyComment = ({ comment, value, callback }) => {
+    if (!userId.value) {
+        toast.error("Vui lòng đăng nhập để bình luận");
+        router.push({ name: "login" });
+        return;
+    }
+
     const payload = {
         noidung: value,
-        id_user: 1,
+        id_user: userId.value,
         id_binhluan: comment.id,
     };
 
@@ -78,9 +159,93 @@ const handleSubmitReplyComment = ({ comment, value, callback }) => {
         },
     });
 };
+
+const handleSelectedModify = (key, data) => {
+    selectedModify.value = {
+        open: true,
+        key,
+        data,
+    };
+};
+
+const handleClose = (value) => {
+    if (!value) {
+        selectedModify.value = {
+            open: false,
+            key: "",
+            data: null,
+        };
+    }
+};
+
+const handleConfirmDelete = (callback) => {
+    if (!userId.value) {
+        toast.error("Vui lòng đăng nhập để bình luận");
+        router.push({ name: "login" });
+        return;
+    }
+
+    if (!selectedModify.value.data) {
+        return;
+    }
+
+    if (selectedModify.value.data?.id_binhluan) {
+        // Delete reply comment
+        mutationDeleteReplyComment.mutate(selectedModify.value.data?.id, {
+            onSuccess: () => {
+                toast.success("Đã xóa bình luận");
+                queryClient.invalidateQueries({
+                    queryKey: queryKeysGetAllComment(options.value),
+                    exact: true,
+                });
+                callback();
+                selectedModify.value = {
+                    open: false,
+                    key: "",
+                    data: null,
+                };
+            },
+        });
+    } else {
+        // Delete comment
+        mutationDeleteComment.mutate(selectedModify.value.data?.id, {
+            onSuccess: () => {
+                toast.success("Đã xóa bình luận");
+                queryClient.invalidateQueries({
+                    queryKey: queryKeysGetAllComment(options.value),
+                    exact: true,
+                });
+                callback();
+                selectedModify.value = {
+                    open: false,
+                    key: "",
+                    data: null,
+                };
+            },
+        });
+    }
+};
+
+const handleCancel = () => {
+    selectedModify.value = {
+        open: false,
+        key: "",
+        data: null,
+    };
+};
 </script>
 
 <template>
+    <delete-confirm-dialog
+        :open="selectedModify.open && selectedModify.key === 'delete'"
+        @update:open="handleClose"
+        @confirm="handleConfirmDelete"
+        :is-loading="
+            mutationDeleteReplyComment.isPending.value ||
+            mutationDeleteComment.isPending.value
+        "
+    />
+
     <div class="news-detail" v-if="!isLoading">
         <div class="news-title mb-2 color-primary text-shadow">
             <h1>{{ data?.metadata?.tieude }}</h1>
@@ -122,8 +287,24 @@ const handleSubmitReplyComment = ({ comment, value, callback }) => {
                 <h2 class="pl-4 pt-4">{{ comments?.length }} bình luận</h2>
 
                 <FormComment
-                    :btnTextSubmit="'Gửi bình luận'"
+                    :btnTextSubmit="
+                        selectedModify.key !== 'delete' &&
+                        selectedModify?.data?.noidung
+                            ? 'Lưu thay đổi'
+                            : 'Gửi bình luận'
+                    "
                     @submit="handleSubmitNewComment"
+                    :value="
+                        (selectedModify.key !== 'delete' &&
+                            selectedModify?.data?.noidung) ||
+                        ''
+                    "
+                    @cancel="handleCancel"
+                    :is-loading="
+                        mutationAddComment.isPending.value ||
+                        mutationEditComment.isPending.value ||
+                        mutationEditReplyComment.isPending.value
+                    "
                 />
 
                 <v-list class="my-5 w-100 px-4">
@@ -132,6 +313,22 @@ const handleSubmitReplyComment = ({ comment, value, callback }) => {
                         :key="comment.id"
                         :comment="comment"
                         @submitReply="handleSubmitReplyComment"
+                        :show-action="comment.id_user == userId"
+                        @editComment="
+                            ($event) =>
+                                handleSelectedModify('editComment', $event)
+                        "
+                        @deleteComment="
+                            ($event) => handleSelectedModify('delete', $event)
+                        "
+                        @editCommentChild="
+                            ($event) =>
+                                handleSelectedModify('editCommentChild', $event)
+                        "
+                        @deleteCommentChild="
+                            ($event) => handleSelectedModify('delete', $event)
+                        "
+                        :is-loading="mutationReplyComment.isPending.value"
                     />
                 </v-list>
             </v-card>

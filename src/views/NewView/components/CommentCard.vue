@@ -1,18 +1,33 @@
 <script setup>
+import { getAuth } from "@/hooks/auth.hook";
 import { fToNow, urlImage } from "@/utils";
 import FormComment from "@/views/NewView/components/FormComment.vue";
 import { ref } from "vue";
 
 const props = defineProps({
     comment: Object,
+    showAction: { type: Boolean, default: false },
+    isLoading: { type: Boolean, default: false },
 });
+
+const { data: user, userId } = getAuth();
 
 const showReply = ref(false);
 
-const emit = defineEmits(["submitReply"]);
+const emit = defineEmits([
+    "submitReply",
+    "editComment",
+    "deleteComment",
+    "editCommentChild",
+    "deleteCommentChild",
+]);
 
 const handleSubmitReplyComment = ({ comment, callback }) => {
     emit("submitReply", { value: comment, comment: props.comment, callback });
+};
+
+const handleSelectComment = (key, comment) => {
+    emit(key, comment);
 };
 </script>
 
@@ -41,11 +56,17 @@ const handleSubmitReplyComment = ({ comment, callback }) => {
                                 </small>
                             </div>
 
-                            <div>
+                            <div v-if="showAction">
                                 <v-icon
                                     size="small"
                                     color="green"
                                     class="cursor-pointer icon mr-2"
+                                    @click="
+                                        handleSelectComment(
+                                            'editComment',
+                                            comment
+                                        )
+                                    "
                                 >
                                     mdi-pencil-outline
                                 </v-icon>
@@ -54,6 +75,12 @@ const handleSubmitReplyComment = ({ comment, callback }) => {
                                     size="small"
                                     color="red"
                                     class="cursor-pointer icon"
+                                    @click="
+                                        handleSelectComment(
+                                            'deleteComment',
+                                            comment
+                                        )
+                                    "
                                 >
                                     mdi-delete-outline
                                 </v-icon>
@@ -124,11 +151,21 @@ const handleSubmitReplyComment = ({ comment, callback }) => {
                                             </small>
                                         </div>
 
-                                        <div>
+                                        <div
+                                            v-if="
+                                                commentChild?.user?.id == userId
+                                            "
+                                        >
                                             <v-icon
                                                 size="small"
                                                 color="green"
                                                 class="cursor-pointer icon mr-2"
+                                                @click="
+                                                    handleSelectComment(
+                                                        'editCommentChild',
+                                                        commentChild
+                                                    )
+                                                "
                                             >
                                                 mdi-pencil-outline
                                             </v-icon>
@@ -137,6 +174,12 @@ const handleSubmitReplyComment = ({ comment, callback }) => {
                                                 size="small"
                                                 color="red"
                                                 class="cursor-pointer icon"
+                                                @click="
+                                                    handleSelectComment(
+                                                        'deleteCommentChild',
+                                                        commentChild
+                                                    )
+                                                "
                                             >
                                                 mdi-delete-outline
                                             </v-icon>
@@ -156,6 +199,7 @@ const handleSubmitReplyComment = ({ comment, callback }) => {
                             :btnTextSubmit="'Trả lời'"
                             @submit="handleSubmitReplyComment"
                             :rows="1"
+                            :isLoading="isLoading"
                         />
                     </div>
                 </div>

@@ -3,10 +3,14 @@ import { ref, onMounted, onBeforeUnmount, inject, computed } from "vue";
 import { ROUTE_PATHS } from "@/constants/route.constant";
 import Search from "@/components/ui/Search";
 import { useGetCountMailbox } from "@/hooks/mailbox.hook";
+import { AuthLocalStorageService } from "@/services/auth.service";
+import { useRouter } from "vue-router";
+import { toast } from "vue-sonner";
 
 const drawer = inject("drawer");
 
 const { data } = useGetCountMailbox();
+const router = useRouter();
 
 const countMailbox = computed(() => {
     if (!data?.value) return false;
@@ -18,6 +22,12 @@ const countMailbox = computed(() => {
         ) > 0
     );
 });
+
+const handleLogout = () => {
+    AuthLocalStorageService.removeAuth();
+    router.push({ name: "login" });
+    toast.success("Đăng xuất thành công!");
+};
 </script>
 
 <template>
@@ -66,7 +76,11 @@ const countMailbox = computed(() => {
                                 <v-btn class="custom-btn" variant="text">
                                     Trang cá nhân</v-btn
                                 >
-                                <v-btn class="custom-btn" variant="text">
+                                <v-btn
+                                    class="custom-btn"
+                                    variant="text"
+                                    @click="handleLogout"
+                                >
                                     Đăng xuất
                                 </v-btn>
                             </div>

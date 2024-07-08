@@ -5,6 +5,7 @@ const queryKeys = {
     users: {
         DETAILS: "GET_USER_DETAILS",
         GET_ALL: "GET_ALL_USERS",
+        GET_ME: "GET_ME",
     },
     news: {
         DETAILS: "GET_NEWS_DETAILS",

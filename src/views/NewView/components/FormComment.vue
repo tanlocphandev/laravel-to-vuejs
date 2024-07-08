@@ -1,15 +1,32 @@
 <script setup>
 import { toast } from "vue-sonner";
-import { ref } from "vue";
+import { ref, watch, watchEffect } from "vue";
 
 const props = defineProps({
     btnTextSubmit: String,
     rows: Number,
+    value: {
+        type: String,
+        default: "",
+    },
+    isLoading: {
+        type: Boolean,
+        default: false,
+    },
 });
 
-const emit = defineEmits(["submit"]);
+const emit = defineEmits(["submit", "cancel"]);
 
 const newComment = ref("");
+
+watchEffect(() => {
+    newComment.value = props.value;
+});
+
+const handleClickCancel = () => {
+    newComment.value = "";
+    emit("cancel");
+};
 
 const handleSubmitNewComment = () => {
     newComment.value = newComment.value.trim();
@@ -42,8 +59,23 @@ const handleSubmitNewComment = () => {
             color="primary"
             size="small"
             @click="handleSubmitNewComment"
+            :loading="isLoading"
+            :disabled="isLoading"
         >
             {{ btnTextSubmit }}
+        </v-btn>
+
+        <v-btn
+            v-if="value.length > 0"
+            class="mr-2"
+            style="float: right"
+            color="error"
+            size="small"
+            @click="handleClickCancel"
+            :loading="isLoading"
+            :disabled="isLoading"
+        >
+            Hủy bỏ
         </v-btn>
     </div>
 </template>

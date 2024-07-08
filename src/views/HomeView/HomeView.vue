@@ -52,8 +52,8 @@ const { data, isLoading } = useGetCategory({
             fDate(cardItem?.tintuc[0]?.created_at, 'DD/MM/YYYY HH:mm:ss')
         "
         :id="cardItem?.tintuc[0]?.id"
-        views="5"
-        comments="0"
+        :views="cardItem?.tintuc[0]?.luotxem"
+        :comments="cardItem?.tintuc[0]?.binhluan?.length"
     />
 </template>
 

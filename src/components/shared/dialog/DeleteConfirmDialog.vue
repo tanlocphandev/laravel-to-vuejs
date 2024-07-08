@@ -3,6 +3,10 @@ import { ref, watch, watchEffect } from "vue";
 
 const props = defineProps({
     open: Boolean,
+    isLoading: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const emit = defineEmits(["update:open", "confirm"]);
@@ -42,12 +46,16 @@ const handleConfirm = () => {
                     variant="outline"
                     text="Hủy bỏ"
                     @click="handleClose"
+                    :loading="isLoading"
+                    :disabled="isLoading"
                 ></v-btn>
                 <v-btn
                     color="green"
                     variant="tonal"
                     text="Ok"
                     @click="handleConfirm"
+                    :loading="isLoading"
+                    :disabled="isLoading"
                 ></v-btn>
             </template>
         </v-card>

@@ -52,10 +52,54 @@ export const useMutationAddComment = () => {
     });
 };
 
+export const useMutationEditComment = () => {
+    return useMutation({
+        mutationFn: (data) => {
+            return commentService.put(data.id, data);
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        },
+    });
+};
+
+export const useMutationDeleteComment = () => {
+    return useMutation({
+        mutationFn: (id) => {
+            return commentService.delete(id);
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        },
+    });
+};
+
 export const useMutationReplyComment = () => {
     return useMutation({
         mutationFn: (data) => {
             return replyCommentService.post(data);
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        },
+    });
+};
+
+export const useMutationEditReplyComment = () => {
+    return useMutation({
+        mutationFn: (data) => {
+            return replyCommentService.put(data.id, data);
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        },
+    });
+};
+
+export const useMutationDeleteReplyComment = () => {
+    return useMutation({
+        mutationFn: (id) => {
+            return replyCommentService.delete(id);
         },
         onError: (error) => {
             toast.error(error.message);

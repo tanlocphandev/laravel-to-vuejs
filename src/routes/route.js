@@ -1,6 +1,9 @@
 import NProgress from "nprogress";
 import { createRouter, createWebHistory, RouterView } from "vue-router";
 import { ROUTE_PATHS } from "../constants/route.constant";
+import { AuthLocalStorageService } from "@/services/auth.service";
+import { useGetMe } from "@/hooks/auth.hook";
+import { PERMISSIONS } from "@/constants";
 
 // VIEW IMPORT LAYOUT
 const AdminLayout = () => import("@/components/layouts/AdminLayout.vue");
@@ -103,6 +106,7 @@ const routes = [
             {
                 path: "login",
                 component: LoginView,
+                name: "login",
                 meta: { title: "Đăng nhập" },
             },
         ],
@@ -110,10 +114,15 @@ const routes = [
     {
         path: ROUTE_PATHS.AdminHome,
         component: AdminLayout,
+        meta: {
+            requiresAuth: true,
+            permissions: [PERMISSIONS.ADMIN],
+        },
         children: [
             {
                 path: ROUTE_PATHS.AdminHome,
                 component: AdminHomeView,
+                name: "dashboard",
                 meta: { title: "Dashboard" },
                 sensitive: true,
             },
@@ -305,6 +314,60 @@ const routes = [
 const router = createRouter({
     history: createWebHistory(),
     routes,
+});
+
+router.beforeEach((to, from, next) => {
+    const userId = AuthLocalStorageService.getAuth();
+
+    const { data } = useGetMe({
+        userId,
+        enabled: Boolean(userId),
+        select: (data) => data?.metadata,
+    });
+
+    if (from.name === "login") {
+        return next();
+    }
+
+    if (to.name === "login") {
+        if (userId) {
+            if (data.value && data.value?.permission === PERMISSIONS.ADMIN)
+                return next({ name: "dashboard" });
+            else {
+                return next({ path: "/" });
+            }
+        }
+
+        return next();
+    }
+
+    if (to.meta?.requiresAuth) {
+        if (!userId || !data.value) {
+            return next({ name: "login" });
+        } else if (to.meta?.permissions) {
+            if (to.meta?.permissions?.includes(data.value?.permission)) {
+                return next();
+            } else {
+                return next({ path: "/" });
+            }
+        } else {
+            return next();
+        }
+    }
+
+    if (to.meta?.permissions) {
+        if (!data.value) {
+            return next({ name: "login" });
+        }
+
+        if (to.meta?.permissions?.includes(data.value?.permission)) {
+            return next();
+        } else {
+            return next({ path: "/" });
+        }
+    }
+
+    next();
 });
 
 router.beforeEach((to, from, next) => {

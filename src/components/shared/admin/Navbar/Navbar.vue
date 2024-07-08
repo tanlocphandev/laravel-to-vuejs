@@ -1,8 +1,12 @@
 <script setup>
-import { inject, ref } from "vue";
+import { computed, inject, ref } from "vue";
 import { ROUTE_PATHS } from "@/constants/route.constant";
+import { AuthLocalStorageService } from "@/services/auth.service";
+import { getAuth, useGetMe } from "@/hooks/auth.hook";
 
 const drawer = inject("drawer");
+
+const { data, userId } = getAuth();
 
 const links = [
     ["mdi-home", "Dashboard", ROUTE_PATHS.AdminHome],
@@ -63,7 +67,7 @@ const personals = [
             </v-avatar>
 
             <div>
-                <div>Huỳnh Văn Thùy</div>
+                <div>{{ data?.viewname }}</div>
                 <div>Admin</div>
             </div>
         </v-sheet>

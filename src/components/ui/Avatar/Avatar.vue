@@ -1,4 +1,26 @@
-<script setup></script>
+<script setup>
+import { useGetMe } from "@/hooks/auth.hook";
+import { AuthLocalStorageService } from "@/services/auth.service";
+import { computed } from "vue";
+import { PERMISSIONS } from "@/constants";
+import { useRouter } from "vue-router";
+import { toast } from "vue-sonner";
+
+const router = useRouter();
+const userId = computed(() => AuthLocalStorageService.getAuth());
+
+const { data } = useGetMe({
+    userId,
+    enabled: Boolean(userId.value),
+    select: (data) => data?.metadata,
+});
+
+const handleLogout = () => {
+    AuthLocalStorageService.removeAuth();
+    router.push({ name: "login" });
+    toast.success("Đăng xuất thành công!");
+};
+</script>
 
 <template>
     <v-menu min-width="200px" rounded>
@@ -9,16 +31,51 @@
                 </v-avatar>
             </v-btn>
         </template>
+
         <v-card>
             <v-card-text>
                 <div class="card-avatar">
-                    <v-btn to="/auth/login" class="custom-btn" variant="text"> Đăng nhập </v-btn>
-                    <v-btn to="/admin" class="custom-btn" variant="text">Quản trị viên </v-btn>
+                    <v-btn
+                        v-if="!Boolean(userId)"
+                        to="/auth/login"
+                        class="custom-btn"
+                        variant="text"
+                    >
+                        Đăng nhập
+                    </v-btn>
+
+                    <v-btn
+                        v-if="
+                            Boolean(userId) &&
+                            data?.permission === PERMISSIONS.ADMIN
+                        "
+                        to="/admin"
+                        class="custom-btn"
+                        variant="text"
+                    >
+                        Quản trị viên
+                    </v-btn>
+
+                    <v-btn
+                        v-if="Boolean(userId)"
+                        class="custom-btn"
+                        variant="text"
+                    >
+                        Trang cá nhân
+                    </v-btn>
+
+                    <v-btn
+                        v-if="Boolean(userId)"
+                        class="custom-btn"
+                        variant="text"
+                        @click="handleLogout"
+                    >
+                        Đăng xuất
+                    </v-btn>
                 </div>
             </v-card-text>
         </v-card>
     </v-menu>
-
 </template>
 
 <style lang="css" scoped>

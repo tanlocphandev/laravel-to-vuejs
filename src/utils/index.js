@@ -70,3 +70,5 @@ export const filterValuesEmptyObject = (params = {}) => {
 export const fPrice = (price) => {
     return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(price);
 };
+
+export const sleep = (ms = 500) => new Promise((rs) => setTimeout(rs, ms));
