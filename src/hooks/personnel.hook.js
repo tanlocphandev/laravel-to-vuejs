@@ -23,7 +23,7 @@ export const useGetPersonnelDetails = ({ id, params = {}, select = undefined }) 
     const options = computed(() => {
         return {
             queryFn: () => personnelService.getById(id, params),
-            queryKey: getQueryKeys({ key: queryKeys.personnel.DETAILS, ...params }),
+            queryKey: getQueryKeys({ key: queryKeys.personnel.DETAILS, id, ...params }),
             select,
             enabled: Boolean(id.value),
         };

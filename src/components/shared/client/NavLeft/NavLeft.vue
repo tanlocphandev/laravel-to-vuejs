@@ -1,4 +1,27 @@
 <script setup>
+import { useGetDepartment } from "@/hooks/department.hook";
+import { useGetFaculty } from "@/hooks/faculty.hook";
+
+const { data: faculties, isLoading: isLoadingFaculties } = useGetFaculty(
+    {
+        all: 1,
+    },
+    (data) => {
+        if (data?.metadata) return data?.metadata;
+        return [];
+    }
+);
+
+const { data: departments, isLoading: isLoadingDepartments } = useGetDepartment(
+    {
+        all: 1,
+    },
+    (data) => {
+        if (data?.metadata) return data?.metadata;
+        return [];
+    }
+);
+
 const structures = [
     ["mdi-medal", "Tổ chức 1", "#"],
     ["mdi-medal", "Tổ chức 2", "#"],
@@ -26,37 +49,70 @@ const access = [
 
 <template>
     <v-list class="nav-info">
-        <v-list-group value="structures">
+        <v-list-group
+            value="structures"
+            :class="isLoadingFaculties ? 'px-2' : ''"
+        >
             <template v-slot:activator="{ props }">
                 <v-list-item v-bind="props">
-                    <v-list-item-title>Cơ cấu tổ chức</v-list-item-title>
+                    <v-list-item-title>Khoa</v-list-item-title>
                 </v-list-item>
             </template>
 
-            <v-list-item v-for="[icon, title, to] in structures" :key="icon" link :to="to">
+            <v-skeleton-loader
+                v-if="isLoadingFaculties"
+                type="list-item,list-item,list-item,list-item"
+            ></v-skeleton-loader>
+
+            <v-list-item
+                v-else
+                v-for="item in faculties"
+                :key="item.id"
+                link
+                :to="{ name: 'faculty_details', params: { id: item.id } }"
+            >
                 <div class="list-item">
-                    <v-icon class="mr-3">{{ icon }}</v-icon>
-                    <v-list-item-title> {{ title }} </v-list-item-title>
+                    <v-icon class="mr-3">mdi-circle-small</v-icon>
+                    <v-list-item-title> {{ item.name }} </v-list-item-title>
                 </div>
             </v-list-item>
         </v-list-group>
 
-        <v-list-group value="groups">
+        <v-list-group
+            value="groups"
+            :class="isLoadingDepartments ? 'px-2' : ''"
+        >
             <template v-slot:activator="{ props }">
                 <v-list-item v-bind="props">
-                    <v-list-item-title>Các tổ chuyên môn</v-list-item-title>
+                    <v-list-item-title>Bộ môn</v-list-item-title>
                 </v-list-item>
             </template>
 
-            <v-list-item v-for="[icon, title, to] in groups" :key="icon" link :to="to">
+            <v-skeleton-loader
+                v-if="isLoadingDepartments"
+                type="list-item,list-item,list-item,list-item"
+            ></v-skeleton-loader>
+
+            <v-list-item
+                v-else
+                v-for="item in departments"
+                :key="item.id"
+                link
+                :to="{ name: 'department_details', params: { id: item.id } }"
+            >
                 <div class="list-item">
-                    <v-icon class="mr-3">{{ icon }}</v-icon>
-                    <v-list-item-title> {{ title }} </v-list-item-title>
+                    <v-icon class="mr-3">mdi-circle-small</v-icon>
+                    <v-list-item-title> {{ item.name }} </v-list-item-title>
                 </div>
             </v-list-item>
         </v-list-group>
 
-        <v-list-item v-for="[text, to, index] in navInfo" :key="index" link :to="to">
+        <v-list-item
+            v-for="[text, to, index] in navInfo"
+            :key="index"
+            link
+            :to="to"
+        >
             <v-list-item-title> {{ text }} </v-list-item-title>
         </v-list-item>
     </v-list>
@@ -67,7 +123,9 @@ const access = [
             <v-list-group>
                 <template v-slot:activator="{ props }">
                     <v-list-item v-bind="props">
-                        <v-list-item-title>Dành cho giảng viên</v-list-item-title>
+                        <v-list-item-title
+                            >Dành cho giảng viên</v-list-item-title
+                        >
                     </v-list-item>
                 </template>
 
@@ -148,7 +206,10 @@ const access = [
 }
 
 .v-list-item:hover {
-    background-image: linear-gradient(rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 100%);
+    background-image: linear-gradient(
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.2) 100%
+    );
     cursor: pointer;
 }
 

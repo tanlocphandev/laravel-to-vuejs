@@ -59,6 +59,8 @@ const headers = [
         title: "Email",
         align: "start",
         key: "email",
+        maxWidth: 100,
+        nowrap: true,
     },
     {
         title: "Thuộc Khoa",
@@ -71,6 +73,8 @@ const headers = [
         align: "start",
         key: "department",
         value: (item) => item?.department?.name || "N/A",
+        maxWidth: 150,
+        nowrap: true,
     },
     { title: "Action", key: "actions", sortable: false },
 ];
@@ -181,17 +185,17 @@ const seeItem = (item) => {
                 <router-link
                     :to="{ name: 'edit_personnel', params: { id: item.id } }"
                 >
-                    <v-icon
-                        class="me-2"
-                        size="small"
-                        color="green"
-                        @click="editItem(item)"
-                    >
+                    <v-icon size="small" color="green" @click="editItem(item)">
                         mdi-pencil
                     </v-icon>
                 </router-link>
 
-                <v-icon size="small" color="red" @click="deleteItem(item)">
+                <v-icon
+                    size="small"
+                    class="mx-2"
+                    color="red"
+                    @click="deleteItem(item)"
+                >
                     mdi-delete
                 </v-icon>
 

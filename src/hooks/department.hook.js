@@ -23,8 +23,8 @@ export const useGetDepartment = (params = {}, select = undefined, enabled = true
 export const useGetDepartmentDetails = ({ id, params = {}, select = undefined }) => {
     const options = computed(() => {
         return {
-            queryFn: () => departmentService.getById(id),
-            queryKey: getQueryKeys({ key: queryKeys.department.DETAILS, ...params }),
+            queryFn: () => departmentService.getById(id, params),
+            queryKey: getQueryKeys({ key: queryKeys.department.DETAILS, id, ...params }),
             select,
             enabled: Boolean(id.value),
         };

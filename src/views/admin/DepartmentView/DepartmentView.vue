@@ -53,9 +53,16 @@ const headers = [
         value: (item) => item?.faculty?.name || "N/A",
     },
     {
+        title: "Hình",
+        align: "start",
+        key: "image",
+    },
+    {
         title: "Mô tả",
         align: "start",
         key: "description",
+        maxWidth: 200,
+        nowrap: true,
     },
     { title: "Action", key: "actions", sortable: false },
 ];

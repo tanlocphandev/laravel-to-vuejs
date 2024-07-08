@@ -8,6 +8,8 @@ const ClientLayout = () => import("@/components/layouts/ClientLayout.vue");
 
 // VIEW IMPORT FOR CUSTOMER
 const AboutView = () => import("@/views/AboutView");
+const FacultyDetailsView = () => import("@/views/FacultyDetailsView");
+const DepartmentDetailsView = () => import("@/views/DepartmentDetailsView");
 const PersonnelView = () => import("@/views/PersonnelView");
 const PersonnelDetailView = () => import("@/views/PersonnelView/PersonnelDetailView.vue");
 const HomeView = () => import("@/views/HomeView");
@@ -56,6 +58,20 @@ const routes = [
                 meta: { title: "Giới thiệu" },
             },
             {
+                path: ROUTE_PATHS.FacultyPage + "/:id",
+                name: "faculty_details",
+                component: FacultyDetailsView,
+                meta: { title: "Chi tiết khoa" },
+                sensitive: true,
+            },
+            {
+                path: ROUTE_PATHS.DepartmentPage + "/:id",
+                name: "department_details",
+                component: DepartmentDetailsView,
+                meta: { title: "Chi tiết bộ môn" },
+                sensitive: true,
+            },
+            {
                 path: ROUTE_PATHS.Personnel,
                 component: PersonnelView,
                 meta: { title: "Nhân sự" },
@@ -65,6 +81,7 @@ const routes = [
                 name: "person_details",
                 component: PersonnelDetailView,
                 meta: { title: "Nhân sự chi tiết" },
+                sensitive: true,
             },
             {
                 path: ROUTE_PATHS.News,
@@ -76,6 +93,7 @@ const routes = [
                 name: "news_details",
                 component: NewDetailView,
                 meta: { title: "Tin Tức chi tiết" },
+                sensitive: true,
             },
         ],
     },

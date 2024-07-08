@@ -71,6 +71,11 @@ const onSubmit = async () => {
         faculty_id: state.faculty_id,
     };
 
+    if (!Boolean(state.image)) {
+        toast.error("Vui lòng chọn hình ảnh");
+        return;
+    }
+
     if (Boolean(id.value)) {
         mutationEdit.mutate(
             { ...filterValuesEmptyObject(payload), id: id.value },
@@ -155,6 +160,7 @@ const handleOnFileChange = (file) => {
                             label="Mô tả"
                             placeholder="Viết mô tả bộ môn...  (không bắt buộc)"
                             rows="2"
+                            :rules="[rules.required]"
                         ></v-textarea>
 
                         <upload-file-image

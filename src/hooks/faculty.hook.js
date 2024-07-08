@@ -1,6 +1,6 @@
 import queryKeys from "@/constants/queryKey.constant";
 import facultyService from "@/services/faculty.service";
-import { getQueryKeys } from "@/utils";
+import { getQueryKeys, mapParamsToValues } from "@/utils";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 import { toast } from "vue-sonner";
@@ -22,10 +22,10 @@ export const useGetFaculty = (params = {}, select = undefined) => {
 export const useGetFacultyDetails = ({ id, params = {}, select = undefined }) => {
     const options = computed(() => {
         return {
-            queryFn: () => facultyService.getById(id),
-            queryKey: getQueryKeys({ key: queryKeys.faculty.DETAILS, ...params }),
+            queryFn: () => facultyService.getById(id, params),
+            queryKey: getQueryKeys({ key: queryKeys.faculty.DETAILS, id, ...params }),
             select,
-            enabled: Boolean(id.value),
+            enabled: Boolean(mapParamsToValues(id)),
         };
     });
 

@@ -6,6 +6,8 @@ export const ROUTE_PATHS = {
     Personnel: "/personnel",
     News: "/news",
     AdminHome: "/admin",
+    FacultyPage: "/faculty",
+    DepartmentPage: "/department",
     AdminCategory: (isRedirect) => (!isRedirect ? "category" : "/admin/category"),
     AdminPost: (isRedirect) => (!isRedirect ? "post" : "/admin/post"),
     AdminAbout: (isRedirect) => (!isRedirect ? "about" : "/admin/about"),

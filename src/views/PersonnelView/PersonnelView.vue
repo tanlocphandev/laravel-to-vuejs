@@ -1,59 +1,69 @@
 <script setup>
+import { useGetDepartment } from "@/hooks/department.hook";
+import { urlImage } from "@/utils";
+import { mapToNamePersonnel } from "@/constants/personnel.constant";
+
+const { data: departments, isLoading } = useGetDepartment(
+    {
+        all: 1,
+        include_personnel: "true",
+        include_faculty: "true",
+    },
+    (data) => data?.metadata
+);
 </script>
 
 <template>
-    <v-row>
-        <v-col cols="12">
-            <h1 class="text-center">Bộ môn Ứng dụng tin học</h1>
-        </v-col>
-    </v-row>
+    <v-skeleton-loader
+        v-if="isLoading"
+        type="article,article,article,article,article"
+    ></v-skeleton-loader>
 
-    <v-row class="content-personnel">
-        <v-col cols="12" sm="6" md="6">
-            <v-card>
-                <v-card-subtitle class="content-title"
-                    >Trưởng bộ môn</v-card-subtitle
+    <div v-else>
+        <div v-for="data in departments" :key="data.id">
+            <v-row>
+                <v-col cols="12">
+                    <h1 class="text-center">{{ data.name }}</h1>
+                </v-col>
+            </v-row>
+
+            <v-row class="content-personnel">
+                <v-col
+                    v-for="item in data.personnel"
+                    :key="item.id"
+                    cols="12"
+                    sm="6"
+                    md="6"
                 >
-                <v-img
-                    src="/assets/about/tinhoc1.jpg"
-                    class="white--text"
-                    height="200px"
-                ></v-img>
-                <v-card-title class="text-center">
-                    PGS.TS Nguyễn Thanh Bình
-                </v-card-title>
-                <v-card-actions>
-                    <router-link
-                        class="mx-auto"
-                        :to="{ name: 'person_details', params: { id: 1 } }"
-                        ><v-btn class="action-icon-btn">xem thêm</v-btn>
-                    </router-link>
-                </v-card-actions>
-            </v-card>
-        </v-col>
-        <v-col cols="12" sm="6" md="6">
-            <v-card>
-                <v-card-subtitle class="content-title"
-                    >Phó trưởng bộ môn</v-card-subtitle
-                >
-                <v-img
-                    src="/assets/about/tinhoc1.jpg"
-                    class="white--text"
-                    height="200px"
-                ></v-img>
-                <v-card-title class="text-center"
-                    >ThS. Hà Văn Thảo</v-card-title
-                >
-                <v-card-actions>
-                    <router-link
-                        class="mx-auto"
-                        :to="{ name: 'person_details', params: { id: 1 } }"
-                        ><v-btn class="action-icon-btn">xem thêm</v-btn>
-                    </router-link>
-                </v-card-actions>
-            </v-card>
-        </v-col>
-    </v-row>
+                    <v-card>
+                        <v-card-subtitle class="content-title">
+                            {{ item.position }}
+                        </v-card-subtitle>
+
+                        <v-img
+                            :src="urlImage(item.avatar, 'personnel')"
+                            class="white--text"
+                            height="200px"
+                        ></v-img>
+
+                        <v-card-title class="text-center">
+                            {{ mapToNamePersonnel(item) }}
+                        </v-card-title>
+                        <v-card-actions>
+                            <router-link
+                                class="mx-auto"
+                                :to="{
+                                    name: 'person_details',
+                                    params: { id: item.id },
+                                }"
+                                ><v-btn class="action-icon-btn">xem thêm</v-btn>
+                            </router-link>
+                        </v-card-actions>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </div>
+    </div>
 </template>
 
 <style lang="css" scoped>

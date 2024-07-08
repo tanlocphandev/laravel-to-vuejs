@@ -64,6 +64,11 @@ const onSubmit = async () => {
         image: state.imageName,
     };
 
+    if (!Boolean(state.image)) {
+        toast.error("Vui lòng chọn hình đại diện!");
+        return;
+    }
+
     if (Boolean(id.value)) {
         mutationEdit.mutate(
             { ...filterValuesEmptyObject(payload), id: id.value },
@@ -138,6 +143,7 @@ const handleOnFileChange = (file) => {
                             label="Mô tả"
                             placeholder="Viết mô tả khoa...  (không bắt buộc)"
                             rows="2"
+                            :rules="[rules.required]"
                         ></v-textarea>
 
                         <upload-file-image
