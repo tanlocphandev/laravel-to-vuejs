@@ -35,6 +35,7 @@ class CategoryController extends Controller
 
         if ($includeNews) {
             $data = $data->with('tintuc');
+            $data = $data->with('tintuc.binhluan');
         }
 
         $data = $data->orderBy($request->query('sort', 'id'), $request->query('order', 'desc'));
