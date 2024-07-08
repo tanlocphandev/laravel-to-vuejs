@@ -26,7 +26,7 @@ class FacultyController extends Controller
         $includeDepartment = $request->query('include_department', 'false');
         $includePersonnel = $request->query('include_personnel', 'false');
 
-        $data = Faculty::where($filterItems);
+        $data = Faculty::where($filterItems)->where('id', '=', 2);
 
         if ($includeDepartment == 'true') {
             $data->with('departments');

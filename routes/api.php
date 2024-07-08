@@ -11,7 +11,9 @@ use App\Http\Controllers\Api\V1\FacultyController;
 use App\Http\Controllers\Api\V1\MailboxController;
 use App\Http\Controllers\Api\V1\NewsController;
 use App\Http\Controllers\Api\V1\NewsTypesController;
+use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PersonnelController;
+use App\Http\Controllers\Api\V1\StatisticsController;
 use App\Http\Controllers\Api\V1\UploadController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +36,12 @@ Route::prefix('v1')->middleware('cors')->group(function () {
 
     Route::post('categories/sort/priority', [CategoryController::class, 'sortPriority']);
     Route::post('categories/change/display', [CategoryController::class, 'changeDisplay']);
+
+    Route::get('statistics/count', [StatisticsController::class, 'count']);
+
+    Route::get('notification', [NotificationController::class, 'show']);
+    Route::post('notification', [NotificationController::class, 'store']);
+    Route::put('notification/{notification}', [NotificationController::class, 'update']);
 
     Route::apiResource('about', AboutController::class);
     Route::apiResource('faculty', FacultyController::class);
